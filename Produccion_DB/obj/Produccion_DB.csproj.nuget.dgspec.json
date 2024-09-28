@@ -32,11 +32,6 @@
           "warnAsError": [
             "NU1605"
           ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -52,6 +47,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[8.0.8, )"
+            },
+            "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
+              "target": "Package",
+              "version": "[8.0.5, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",

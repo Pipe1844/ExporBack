@@ -8,7 +8,7 @@ public partial class UsuarioTb
     public string Usuario { get; set; } = null!;
 
     public string RolDeUsuario { get; set; } = null!;
-
+    
     public string? Contrasena { get; set; }
 
     public DateOnly? FechaCreacion { get; set; }
