@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "tBR3yMNmg9NPNHdPmzMaPx9NIvoid3DK00ID1cz8z/BDEPinsucBcA/Yl7oPzO6Y9foYuBMc8iSx8G3SYgIL1Q==",
+  "dgSpecHash": "WPM22K61i4sVmFYYUE/DKikORZ8ccnwPyYX1eTBug3yi8Zw1aCxRwDg9+l+69Eqyoh2BWYu0PKz3CUbreo8E9Q==",
   "success": true,
   "projectFilePath": "C:\\Users\\Pipe\\RiderProjects\\Produccion_DB\\Produccion_DB\\Produccion_DB.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Pipe\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
     "C:\\Users\\Pipe\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",
+    "C:\\Users\\Pipe\\.nuget\\packages\\dotenv.net\\3.2.1\\dotenv.net.3.2.1.nupkg.sha512",
     "C:\\Users\\Pipe\\.nuget\\packages\\humanizer\\2.14.1\\humanizer.2.14.1.nupkg.sha512",
     "C:\\Users\\Pipe\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Pipe\\.nuget\\packages\\humanizer.core.af\\2.14.1\\humanizer.core.af.2.14.1.nupkg.sha512",

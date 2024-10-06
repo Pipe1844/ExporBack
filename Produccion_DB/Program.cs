@@ -1,3 +1,4 @@
+using dotenv.net;
 using Microsoft.EntityFrameworkCore;
 using Produccion_DB.Models;
 
@@ -22,6 +23,8 @@ builder.Services.AddCors(options =>
         app.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
     });
 });
+
+DotEnv.Load();
 
 var app = builder.Build();
 
