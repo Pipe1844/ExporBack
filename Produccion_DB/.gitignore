@@ -1,2 +1,4 @@
 #Ignorar archivo .env
 .env
+#Ignorar depencencias
+Dependencies
