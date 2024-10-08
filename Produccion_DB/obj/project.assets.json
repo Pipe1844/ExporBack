@@ -8134,19 +8134,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Pipe\\.nuget\\packages\\": {}
+    "C:\\Users\\Daniel\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Pipe\\RiderProjects\\Produccion_DB\\Produccion_DB\\Produccion_DB.csproj",
+      "projectUniqueName": "C:\\Users\\Daniel\\Documents\\6 Semestre\\Ingenieria en Sistemas II\\ExporPack-App\\ExporBack\\Produccion_DB\\Produccion_DB.csproj",
       "projectName": "Produccion_DB",
-      "projectPath": "C:\\Users\\Pipe\\RiderProjects\\Produccion_DB\\Produccion_DB\\Produccion_DB.csproj",
-      "packagesPath": "C:\\Users\\Pipe\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Pipe\\RiderProjects\\Produccion_DB\\Produccion_DB\\obj\\",
+      "projectPath": "C:\\Users\\Daniel\\Documents\\6 Semestre\\Ingenieria en Sistemas II\\ExporPack-App\\ExporBack\\Produccion_DB\\Produccion_DB.csproj",
+      "packagesPath": "C:\\Users\\Daniel\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Daniel\\Documents\\6 Semestre\\Ingenieria en Sistemas II\\ExporPack-App\\ExporBack\\Produccion_DB\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Pipe\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\Daniel\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -8164,6 +8164,11 @@
         "warnAsError": [
           "NU1605"
         ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -8208,7 +8213,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.401/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Users\\Daniel\\.dotnet\\sdk\\8.0.401/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
