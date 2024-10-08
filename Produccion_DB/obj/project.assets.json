@@ -8134,19 +8134,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Pipe\\.nuget\\packages\\": {}
+    "C:\\Users\\Ale\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Pipe\\RiderProjects\\Produccion_DB\\Produccion_DB\\Produccion_DB.csproj",
+      "projectUniqueName": "D:\\UNIVERSIDAD\\universida carrera\\2 ciclo 3 año\\REACT PRACTICA\\ExporBack\\Produccion_DB\\Produccion_DB.csproj",
       "projectName": "Produccion_DB",
-      "projectPath": "C:\\Users\\Pipe\\RiderProjects\\Produccion_DB\\Produccion_DB\\Produccion_DB.csproj",
-      "packagesPath": "C:\\Users\\Pipe\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Pipe\\RiderProjects\\Produccion_DB\\Produccion_DB\\obj\\",
+      "projectPath": "D:\\UNIVERSIDAD\\universida carrera\\2 ciclo 3 año\\REACT PRACTICA\\ExporBack\\Produccion_DB\\Produccion_DB.csproj",
+      "packagesPath": "C:\\Users\\Ale\\.nuget\\packages\\",
+      "outputPath": "D:\\UNIVERSIDAD\\universida carrera\\2 ciclo 3 año\\REACT PRACTICA\\ExporBack\\Produccion_DB\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Pipe\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\Ale\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -8208,7 +8208,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.401/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Users\\Ale\\.dotnet\\sdk\\8.0.401/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
