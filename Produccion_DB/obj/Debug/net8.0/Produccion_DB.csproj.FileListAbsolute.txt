@@ -251,6 +251,7 @@ C:\Users\Pipe\RiderProjects\Produccion_DB\Produccion_DB\bin\Debug\net8.0\runtime
 C:\Users\Pipe\RiderProjects\Produccion_DB\Produccion_DB\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\Pipe\RiderProjects\Produccion_DB\Produccion_DB\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Windows.Extensions.dll
 C:\Users\Pipe\RiderProjects\Produccion_DB\Produccion_DB\obj\Debug\net8.0\Produccion_DB.sourcelink.json
+<<<<<<< HEAD
 D:\UNIVERSIDAD\universida carrera\2 ciclo 3 año\REACT PRACTICA\ExporBack\Produccion_DB\bin\Debug\net8.0\appsettings.Development.json
 D:\UNIVERSIDAD\universida carrera\2 ciclo 3 año\REACT PRACTICA\ExporBack\Produccion_DB\bin\Debug\net8.0\appsettings.json
 D:\UNIVERSIDAD\universida carrera\2 ciclo 3 año\REACT PRACTICA\ExporBack\Produccion_DB\bin\Debug\net8.0\Produccion_DB.exe
@@ -504,3 +505,8 @@ D:\UNIVERSIDAD\universida carrera\2 ciclo 3 año\REACT PRACTICA\ExporBack\Produc
 D:\UNIVERSIDAD\universida carrera\2 ciclo 3 año\REACT PRACTICA\ExporBack\Produccion_DB\obj\Debug\net8.0\Produccion_DB.pdb
 D:\UNIVERSIDAD\universida carrera\2 ciclo 3 año\REACT PRACTICA\ExporBack\Produccion_DB\obj\Debug\net8.0\Produccion_DB.genruntimeconfig.cache
 D:\UNIVERSIDAD\universida carrera\2 ciclo 3 año\REACT PRACTICA\ExporBack\Produccion_DB\obj\Debug\net8.0\ref\Produccion_DB.dll
+=======
+C:\Users\Pipe\RiderProjects\Produccion_DB\Produccion_DB\bin\Debug\net8.0\dotenv.net.dll
+C:\Users\Pipe\RiderProjects\Produccion_DB\Produccion_DB\bin\Debug\net8.0\DotNetEnv.dll
+C:\Users\Pipe\RiderProjects\Produccion_DB\Produccion_DB\bin\Debug\net8.0\Sprache.dll
+>>>>>>> da5ba777c83f7f2649139a105721cbcc7f0c66dc
