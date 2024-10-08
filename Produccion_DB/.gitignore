@@ -1,0 +1,6 @@
+#Ignorar archivo .env
+.env
+#Ignorar depencencias
+Dependencies
+bin/
+obj/
