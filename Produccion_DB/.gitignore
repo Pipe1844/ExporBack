@@ -2,3 +2,5 @@
 .env
 #Ignorar depencencias
 Dependencies
+bin/
+obj/
