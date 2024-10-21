@@ -12,17 +12,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var username = Env.GetString("USERNAME");
-var password = Env.GetString("PASSWORD");
+//var username = Env.GetString("USERNAME");
+//var password = Env.GetString("PASSWORD");
 
 // Reemplazar las variables en la cadena de conexión
-var connectionString = builder.Configuration.GetConnectionString("CadenaSqlServer")!
-    .Replace("${USERNAME}", username)
-    .Replace("${PASSWORD}", password);
+//var connectionString = builder.Configuration.GetConnectionString("CadenaSqlServer")!
+//    .Replace("${USERNAME}", username)
+//    .Replace("${PASSWORD}", password);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlServer(connectionString);
+    options.UseSqlServer(builder.Configuration.GetConnectionString("CadenaSqlServer"));
 });
 
 builder.Services.AddCors(options =>
