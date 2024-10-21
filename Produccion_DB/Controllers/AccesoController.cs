@@ -30,7 +30,7 @@ namespace Produccion_DB.Controllers
                     u.Usuario == usuario.Usuario &&
                     u.Contrasena == usuario.Contrasena
                 ).FirstOrDefaultAsync();
-
+            
             if (usuarioEncontrado == null)
                 return Unauthorized(new { isSuccess = false, status = 401 });
             return Ok(new { isSuccess = true, status = 200 ,user = usuarioEncontrado});
