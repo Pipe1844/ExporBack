@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Produccion_DB.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v2/productos")]
     [ApiController]
     public class ProductosController : ControllerBase
     {
