@@ -53,6 +53,18 @@ namespace Produccion_DB.Controllers
                 return BadRequest(new { isSuccess = false, status = 400, message = "Datos de producto inválidos." });
             }
 
+            // Verificar campos requeridos
+            if (string.IsNullOrEmpty(producto.NombreDescriptivo) ||
+                string.IsNullOrEmpty(producto.TipoUso) ||
+                string.IsNullOrEmpty(producto.NombreComercial) ||
+                string.IsNullOrEmpty(producto.UnidadMedida) ||
+                string.IsNullOrEmpty(producto.IngredienteActivo) ||
+                string.IsNullOrEmpty(producto.ConcentracionIactivo.ToString()) ||
+                string.IsNullOrEmpty(producto.Activo.ToString()))
+            {
+                return BadRequest(new { isSuccess = false, status = 400, message = "Faltan campos requeridos." });
+            }
+
             await _appDbContext.ProductosTbs.AddAsync(producto);
             await _appDbContext.SaveChangesAsync();
 
