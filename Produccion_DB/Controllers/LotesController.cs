@@ -2,16 +2,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Produccion_DB.Models;
 
-
 namespace Produccion_DB.Controllers
 {
-    [Route("api/v2/Departamentos")]
+    [Route("api/v2/Lotes")]
     [ApiController]
-    public class DepartamentosController : ControllerBase
-    {
+   public class LotesController : Controller
+   {
        private readonly AppDbContext appDbContext;
        
-       public DepartamentosController(AppDbContext appDbContext)
+       public LotesController(AppDbContext appDbContext)
        {
            this.appDbContext = appDbContext;
        }
@@ -21,24 +20,24 @@ namespace Produccion_DB.Controllers
                {
                    try
                    {
-                       // Intentamos obtener la lista de departamentos
-                       var departamentos = await this.appDbContext.DepartamentoTbs.ToListAsync();
+                       // Intentamos obtener la lista de temporadas
+                       var lotes = await this.appDbContext.LotesFisicosTbs.ToListAsync();
        
                        // Verificamos si la lista está vacía
-                       if (departamentos == null || !departamentos.Any())
+                       if (lotes == null || !lotes.Any())
                        {
                            return NotFound(new 
                            { 
                                isSuccess = false, 
                                status = 404, 
-                               message = "No se encontraron Departamentos en la base de datos." 
+                               message = "No se encontraron Lotes en la base de datos." 
                            });
                        }
                        return Ok(new 
                        { 
                            isSuccess = true, 
                            status = 200, 
-                           Departamentos = departamentos 
+                           Lotes = lotes 
                        });
                    }
                    catch (DbUpdateException dbEx)
@@ -70,15 +69,15 @@ namespace Produccion_DB.Controllers
                        {
                            try
                            {
-                               var departamento = await this.appDbContext.DepartamentoTbs.FindAsync(id);
+                               var lote = await this.appDbContext.LotesFisicosTbs.FindAsync(id);
                        
-                               if (departamento == null)
+                               if (lote == null)
                                {
                                    return NotFound(new 
                                    { 
                                        isSuccess = false, 
                                        status = 404, 
-                                       message = "Departamento no encontrado." 
+                                       message = "Lote no encontrado." 
                                    });
                                }
                
@@ -86,7 +85,7 @@ namespace Produccion_DB.Controllers
                                { 
                                    isSuccess = true, 
                                    status = 200, 
-                                   Departamentos = departamento 
+                                   Lotes = lote 
                                });
                            }
                            catch (DbUpdateException dbEx)
@@ -112,9 +111,9 @@ namespace Produccion_DB.Controllers
                        }
                        
                        [HttpPost]
-                       public async Task<IActionResult> Store([FromBody] DepartamentoTb departamento)
+                       public async Task<IActionResult> Store([FromBody] LotesFisicosTb lote)
                        {
-                           if (departamento == null)
+                           if (lote == null)
                            {
                                return BadRequest(new 
                                { 
@@ -126,15 +125,15 @@ namespace Produccion_DB.Controllers
 
                            try
                            {
-                               await this.appDbContext.DepartamentoTbs.AddAsync(departamento);
+                               await this.appDbContext.LotesFisicosTbs.AddAsync(lote);
                                await this.appDbContext.SaveChangesAsync();
 
                                return Ok(new 
                                { 
                                    isSuccess = true, 
                                    status = 201, 
-                                   message = "Departamento creado con éxito.", 
-                                   Departamento = departamento 
+                                   message = "Lote creado con éxito.", 
+                                   Lote = lote 
                                });
                            }
                            catch (DbUpdateException dbEx)
@@ -159,39 +158,42 @@ namespace Produccion_DB.Controllers
                            }
                        }
                        [HttpPut("{id}")]
-                       public async Task<IActionResult> Update(string id, [FromBody] DepartamentoTb departamentoEntrante)
+                       public async Task<IActionResult> Update(string id, [FromBody] LotesFisicosTb lote)
                        {
-                           var departamentoModificar = await this.appDbContext.DepartamentoTbs.FindAsync(id);
+                           var Lote = await this.appDbContext.LotesFisicosTbs.FindAsync(id);
             
-                           if (departamentoModificar == null)
+                           if (Lote == null)
                            {
-                               return NotFound(new { isSuccess = false, status = 404, message = "Departamento no encontrado." });
+                               return NotFound(new { isSuccess = false, status = 404, message = "Lote no encontrado." });
                            }
 
-                           departamentoModificar.Departamento = departamentoEntrante.Departamento;
-                           departamentoModificar.Encargado = departamentoEntrante.Encargado;
-                           departamentoModificar.Descripcion = departamentoEntrante.Descripcion;
+                           Lote.NombreLote = lote.NombreLote;
+                           Lote.Activo = lote.Activo;
+                           Lote.Descripcion = lote.Descripcion;
+                           Lote.Area = lote.Area;
                            
                            await this.appDbContext.SaveChangesAsync();
                            return Ok(new
                            {
-                               isSuccess = true, status = 200, message = "Departamento actualizado exitosamente.", producto = departamentoModificar
+                               isSuccess = true, status = 200, message = "Lote actualizado exitosamente.", producto = Lote
                            });
                        }
                        [HttpDelete("{id}")]
                        public async Task<IActionResult> Destroy(string id)
                        {
-                           var departamento = await this.appDbContext.DepartamentoTbs.FindAsync(id);
+                           var lote = await this.appDbContext.LotesFisicosTbs.FindAsync(id);
             
-                           if (departamento == null)
+                           if (lote == null)
                            {
-                               return NotFound(new { isSuccess = false, status = 404, message = "Departamento no encontrado." });
+                               return NotFound(new { isSuccess = false, status = 404, message = "Lote no encontrado." });
                            }
             
-                           this.appDbContext.DepartamentoTbs.Remove(departamento);
+                           this.appDbContext.LotesFisicosTbs.Remove(lote);
                            await this.appDbContext.SaveChangesAsync();
             
-                           return Ok(new { isSuccess = true, status = 200, message = "Departamento eliminado exitosamente." });
+                           return Ok(new { isSuccess = true, status = 200, message = "Lote eliminado exitosamente." });
                        }
    } 
+    
 }
+
