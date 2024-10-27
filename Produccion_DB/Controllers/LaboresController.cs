@@ -21,87 +21,123 @@ namespace Produccion_DB.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var labores = await this.appDbContext.LaboresTbs.ToListAsync();
-
-            if (labores == null || !labores.Any())
+            try
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "No se encontraron Labores." });
-            }
+                var labores = await this.appDbContext.LaboresTbs.ToListAsync();
 
-            return Ok(new { isSuccess = true, status = 200, labores = labores });
+                if (labores == null || !labores.Any())
+                {
+                    return Ok(new { isSuccess = true, status = 204, labores = labores });
+                    //return NotFound(new { isSuccess = false, status = 404, message = "No se encontraron Labores." });
+                }
+
+                return Ok(new { isSuccess = true, status = 200, labores = labores });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new { isSuccess = false, status = 500, message = e.Message });
+            }
         }
 
         // GET api/<LaboresController>/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Show(string id)
+        [HttpGet("{laborId}/{departamento}")]
+        public async Task<IActionResult> Show(string laborId, string departamento)
         {
-            var labor = await this.appDbContext.ArticulosTbs.FindAsync(id);
-
-            if (labor == null)
+            try
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "Labor no encontrado." });
-            }
+                var labor = await this.appDbContext.ArticulosTbs.FindAsync(laborId, departamento);
 
-            return Ok(new { isSuccess = true, status = 200, labor = labor });
+                if (labor == null)
+                {
+                    return NotFound(new { isSuccess = false, status = 404, message = "Labor no encontrado." });
+                }
+
+                return Ok(new { isSuccess = true, status = 200, labor = labor });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new { isSuccess = false, status = 500, message = e.Message });
+            }
         }
 
         // POST api/<LaboresController>
         [HttpPost]
         public async Task<IActionResult> Store([FromBody] LaboresTb labor)
         {
-            if (labor == null)
+            try
             {
-                return BadRequest(new { isSuccess = false, status = 400, message = "Datos del labor inválidos." });
+                if (labor == null)
+                {
+                    return BadRequest(new { isSuccess = false, status = 400, message = "Datos del labor inválidos." });
+                }
+
+                await this.appDbContext.LaboresTbs.AddAsync(labor);
+                await this.appDbContext.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    isSuccess = true, status = 201, message = "Labor creado exitosamente.", articulo = labor
+                });
             }
-
-            await this.appDbContext.LaboresTbs.AddAsync(labor);
-            await this.appDbContext.SaveChangesAsync();
-
-            return Ok(new
+            catch (Exception e)
             {
-                isSuccess = true, status = 201, message = "Labor creado exitosamente.", articulo = labor
-            });
+                return StatusCode(500, new { isSuccess = false, status = 500, message = e.Message });
+            }
         }
 
         // PUT api/<LaboresController>/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] LaboresTb oldLabor)
+        [HttpPut("{laborId}/{departamento}")]
+        public async Task<IActionResult> Update(string laborId, string departamento, [FromBody] LaboresTb oldLabor)
         {
-            var labor = await this.appDbContext.LaboresTbs.FindAsync(id);
-
-            if (labor == null)
+            try
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "Articulo no encontrado." });
+                var labor = await this.appDbContext.LaboresTbs.FindAsync(laborId,departamento);
+
+                if (labor == null)
+                {
+                    return NotFound(new { isSuccess = false, status = 404, message = "Articulo no encontrado." });
+                }
+
+
+                labor.Labor = oldLabor.Labor;
+                labor.Departamento = oldLabor.Departamento;
+                labor.Descripcion = oldLabor.Descripcion;
+
+                await this.appDbContext.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    isSuccess = true, status = 200, message = "Labor actualizado exitosamente.", labor = labor
+                });
             }
-
-
-            labor.Labor = oldLabor.Labor;
-            labor.Departamento = oldLabor.Departamento;
-            labor.Descripcion = oldLabor.Descripcion;
-
-            await this.appDbContext.SaveChangesAsync();
-
-            return Ok(new
+            catch (Exception e)
             {
-                isSuccess = true, status = 200, message = "Labor actualizado exitosamente.", labor = labor
-            });
+                return StatusCode(500, new { isSuccess = false, status = 500, message = e.Message });
+            }
         }
 
         // DELETE api/<LaboresController>/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Destroy(string id)
+        [HttpDelete("{laborId}/{departamento}")]
+        public async Task<IActionResult> Destroy(string laborId, string departamento)
         {
-            var labor = await this.appDbContext.LaboresTbs.FindAsync(id);
-
-            if (labor == null) 
+            try
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "Labor no encontrado." });
+                var labor = await this.appDbContext.LaboresTbs.FindAsync(laborId,departamento);
+
+                if (labor == null)
+                {
+                    return NotFound(new { isSuccess = false, status = 404, message = "Labor no encontrado." });
+                }
+
+                this.appDbContext.LaboresTbs.Remove(labor);
+                await this.appDbContext.SaveChangesAsync();
+
+                return Ok(new { isSuccess = true, status = 200, message = "Labor eliminado exitosamente." });
             }
-
-            this.appDbContext.LaboresTbs.Remove(labor);
-            await this.appDbContext.SaveChangesAsync();
-
-            return Ok(new { isSuccess = true, status = 200, message = "Labor eliminado exitosamente." });
+            catch (Exception e)
+            {
+                return StatusCode(500, new { isSuccess = false, status = 500, message = e.Message });
+            }
         }
     }
 }
