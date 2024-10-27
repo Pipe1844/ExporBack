@@ -159,20 +159,21 @@ namespace Produccion_DB.Controllers
             }
         }
         
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] VariedadTb variedad)
+        [HttpPut("{cultivo}/{variedad}")]
+        public async Task<IActionResult> Update(string cultivo, string variedad, [FromBody] VariedadTb variedades)
         {
-            var variedadModific = await this.appDbContext.VariedadTbs.FindAsync(id);
+            var variedadModific = await this.appDbContext.VariedadTbs
+                .FirstOrDefaultAsync(v => v.Cultivo == cultivo && v.Variedad == variedad);
             
             if (variedadModific == null)
             {
                 return NotFound(new { isSuccess = false, status = 404, message = "Variedad no encontrada." });
             }
 
-            variedadModific.Cultivo = variedad.Cultivo;
-            variedadModific.Variedad = variedad.Variedad;
-            variedadModific.NombreAbreviatura = variedad.NombreAbreviatura;
-            variedadModific.Descripcion = variedad.Descripcion;
+            variedadModific.Cultivo = variedades.Cultivo;
+            variedadModific.Variedad = variedades.Variedad;
+            variedadModific.NombreAbreviatura = variedades.NombreAbreviatura;
+            variedadModific.Descripcion = variedades.Descripcion;
             
            
             
@@ -183,17 +184,18 @@ namespace Produccion_DB.Controllers
             });
         }
         
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Destroy(string id)
+        [HttpDelete("{cultivo}/{variedad}")]
+        public async Task<IActionResult> Destroy(string cultivo, string variedad)
         {
-            var variedad = await this.appDbContext.VariedadTbs.FindAsync(id);
+            var variedade = await this.appDbContext.VariedadTbs
+                .FirstOrDefaultAsync(v => v.Cultivo == cultivo && v.Variedad == variedad);
             
-            if (variedad == null)
+            if (variedade == null)
             {
                 return NotFound(new { isSuccess = false, status = 404, message = "variedad no encontrada." });
             }
             
-            this.appDbContext.VariedadTbs.Remove(variedad);
+            this.appDbContext.VariedadTbs.Remove(variedade);
             await this.appDbContext.SaveChangesAsync();
             
             return Ok(new { isSuccess = true, status = 200, message = "variedad eliminada exitosamente." });
