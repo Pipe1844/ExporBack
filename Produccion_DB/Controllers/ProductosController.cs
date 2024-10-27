@@ -24,10 +24,10 @@ namespace Produccion_DB.Controllers
 
             if (productos == null || !productos.Any())
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "No se encontraron productos." });
+                return Ok(new { isSuccess = true, status = 204, Productos=new{} });
             }
 
-            return Ok(new { isSuccess = true, status = 200, productos });
+            return Ok(new { isSuccess = true, status = 200, Productos=productos });
         }
 
         // GET: api/v2/productos/{id}
@@ -59,11 +59,12 @@ namespace Produccion_DB.Controllers
                 string.IsNullOrEmpty(producto.NombreComercial) ||
                 string.IsNullOrEmpty(producto.UnidadMedida) ||
                 string.IsNullOrEmpty(producto.IngredienteActivo) ||
-                string.IsNullOrEmpty(producto.ConcentracionIactivo.ToString()) ||
-                string.IsNullOrEmpty(producto.Activo.ToString()))
+                (producto.ConcentracionIactivo == null || string.IsNullOrEmpty(producto.ConcentracionIactivo.ToString())) ||
+                (producto.Activo == null || string.IsNullOrEmpty(producto.Activo.ToString())))
             {
                 return BadRequest(new { isSuccess = false, status = 400, message = "Faltan campos requeridos." });
             }
+
 
             await _appDbContext.ProductosTbs.AddAsync(producto);
             await _appDbContext.SaveChangesAsync();

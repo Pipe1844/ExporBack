@@ -26,11 +26,11 @@ namespace Produccion_DB.Controllers
                        // Verificamos si la lista está vacía
                        if (lotes == null || !lotes.Any())
                        {
-                           return NotFound(new 
+                           return Ok(new 
                            { 
-                               isSuccess = false, 
-                               status = 404, 
-                               message = "No se encontraron Lotes en la base de datos." 
+                               isSuccess = true, 
+                               status = 204, 
+                               Lotes = new {} 
                            });
                        }
                        return Ok(new 
