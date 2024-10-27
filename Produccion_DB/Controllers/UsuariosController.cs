@@ -46,20 +46,27 @@ namespace Produccion_DB.Controllers
 
         // POST: api/v2/usuarios
         [HttpPost]
-        public async Task<IActionResult> Store([FromBody] UsuarioTb usuario)
+        public async Task<IActionResult> Create([FromBody] UsuarioTb nuevoUsuario)
         {
-            if (usuario == null)
+            // Verificar si el modelo es válido
+            if (!ModelState.IsValid)
             {
                 return BadRequest(new { isSuccess = false, status = 400, message = "Datos de usuario inválidos." });
             }
 
-            await _appDbContext.UsuarioTbs.AddAsync(usuario);
+            // Verificar si el usuario ya existe
+            var usuarioExistente = await _appDbContext.UsuarioTbs.FindAsync(nuevoUsuario.Usuario);
+            if (usuarioExistente != null)
+            {
+                return Conflict(new { isSuccess = false, status = 409, message = "El usuario ya existe." });
+            }
+
+            // Agregar el nuevo usuario a la base de datos
+            await _appDbContext.UsuarioTbs.AddAsync(nuevoUsuario);
             await _appDbContext.SaveChangesAsync();
 
-            return Ok(new
-            {
-                isSuccess = true, status = 201, message = "Usuario creado exitosamente.", usuario
-            });
+            return CreatedAtAction(nameof(Destroy), new { usuario = nuevoUsuario.Usuario }, 
+                new { isSuccess = true, status = 201, message = "Usuario creado exitosamente.", usuario = nuevoUsuario });
         }
 
         // PUT: api/v2/usuarios/{id}
@@ -85,22 +92,24 @@ namespace Produccion_DB.Controllers
                 isSuccess = true, status = 200, message = "Usuario actualizado exitosamente.", usuario
             });
         }
-
-        // DELETE: api/v2/usuarios/{id}
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Destroy(string id)
+        
+        // DELETE: api/v2/usuarios/{usuario}
+        [HttpDelete("{usuario}")]
+        public async Task<IActionResult> Destroy(string usuario)
         {
-            var usuario = await _appDbContext.UsuarioTbs.FindAsync(id);
+            var usuarioEncontrado = await _appDbContext.UsuarioTbs.FindAsync(usuario);
 
-            if (usuario == null)
+            if (usuarioEncontrado == null)
             {
                 return NotFound(new { isSuccess = false, status = 404, message = "Usuario no encontrado." });
             }
 
-            _appDbContext.UsuarioTbs.Remove(usuario);
+            _appDbContext.UsuarioTbs.Remove(usuarioEncontrado);
             await _appDbContext.SaveChangesAsync();
 
             return Ok(new { isSuccess = true, status = 200, message = "Usuario eliminado exitosamente." });
         }
+
+
     }
 }
