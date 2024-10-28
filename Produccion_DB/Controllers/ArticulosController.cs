@@ -24,14 +24,14 @@ namespace Produccion_DB.Controllers
 
             if (articulos == null || !articulos.Any())
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "No se encontraron Articulos." });
+                return Ok(new { isSuccess = true, status = 204, articulos = new {} });
             }
 
             return Ok(new { isSuccess = true, status = 200, articulos = articulos });
         }
         
         [HttpGet("{id}")]
-        public async Task<IActionResult> Show(int id)
+        public async Task<IActionResult> Show(string id)
         {
             var articulo = await this.appDbContext.ArticulosTbs.FindAsync(id);
             
@@ -61,7 +61,7 @@ namespace Produccion_DB.Controllers
         }
         
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] ArticulosTb articulo)
+        public async Task<IActionResult> Update(string id, [FromBody] ArticulosTb articulo)
         {
             var producto = await this.appDbContext.ArticulosTbs.FindAsync(id);
             
@@ -90,7 +90,7 @@ namespace Produccion_DB.Controllers
         }
         
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Destroy(int id)
+        public async Task<IActionResult> Destroy(string id)
         {
             var producto = await this.appDbContext.ArticulosTbs.FindAsync(id);
             

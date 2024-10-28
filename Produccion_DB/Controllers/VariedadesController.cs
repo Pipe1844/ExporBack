@@ -4,41 +4,41 @@ using Produccion_DB.Models;
 
 namespace Produccion_DB.Controllers
 {
-    [Route("api/v2/temporadas")]
+    [Route("api/v2/variedades")]
     [ApiController]
-    
-    public class TemporadaController : ControllerBase
+
+    public class VariedadesController : Controller
     {
         private readonly AppDbContext appDbContext;
 
-        public TemporadaController(AppDbContext appDbContext)
+        public VariedadesController(AppDbContext appDbContext)
         {
             this.appDbContext = appDbContext;
         }
-
+        
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             try
             {
                 // Intentamos obtener la lista de temporadas
-                var temporadas = await this.appDbContext.TemporadaTbs.ToListAsync();
+                var variedades = await this.appDbContext.VariedadTbs.ToListAsync();
 
                 // Verificamos si la lista está vacía
-                if (temporadas == null || !temporadas.Any())
+                if (variedades == null || !variedades.Any())
                 {
                     return Ok(new 
                     { 
                         isSuccess = true, 
                         status = 204, 
-                        Temporadas = new {} 
+                        Variedades = new {} 
                     });
                 }
                 return Ok(new 
                 { 
                     isSuccess = true, 
                     status = 200, 
-                    Temporadas = temporadas 
+                    Variedades = variedades 
                 });
             }
             catch (DbUpdateException dbEx)
@@ -70,15 +70,15 @@ namespace Produccion_DB.Controllers
         {
             try
             {
-                var temporada = await this.appDbContext.TemporadaTbs.FindAsync(id);
+                var variedad = await this.appDbContext.VariedadTbs.FindAsync(id);
         
-                if (temporada == null)
+                if (variedad == null)
                 {
                     return NotFound(new 
                     { 
                         isSuccess = false, 
                         status = 404, 
-                        message = "Artículo no encontrado." 
+                        message = "variedad no encontrada." 
                     });
                 }
 
@@ -86,7 +86,7 @@ namespace Produccion_DB.Controllers
                 { 
                     isSuccess = true, 
                     status = 200, 
-                    Temporadas = temporada 
+                    Variedad = variedad 
                 });
             }
             catch (DbUpdateException dbEx)
@@ -112,9 +112,9 @@ namespace Produccion_DB.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> Store([FromBody] TemporadaTb temporada)
+        public async Task<IActionResult> Store([FromBody] VariedadTb variedad)
         {
-            if (temporada == null)
+            if (variedad == null)
             {
                 return BadRequest(new 
                 { 
@@ -126,15 +126,15 @@ namespace Produccion_DB.Controllers
 
             try
             {
-                await this.appDbContext.TemporadaTbs.AddAsync(temporada);
+                await this.appDbContext.VariedadTbs.AddAsync(variedad);
                 await this.appDbContext.SaveChangesAsync();
 
                 return Ok(new 
                 { 
                     isSuccess = true, 
                     status = 201, 
-                    message = "Temporada creadoa con éxito.", 
-                    Temporada = temporada 
+                    message = "Variedad creada con éxito.", 
+                    Variedad = variedad 
                 });
             }
             catch (DbUpdateException dbEx)
@@ -159,45 +159,46 @@ namespace Produccion_DB.Controllers
             }
         }
         
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] TemporadaTb temporadaa)
+        [HttpPut("{cultivo}/{variedad}")]
+        public async Task<IActionResult> Update(string cultivo, string variedad, [FromBody] VariedadTb variedades)
         {
-            var producto = await this.appDbContext.TemporadaTbs.FindAsync(id);
+            var variedadModific = await this.appDbContext.VariedadTbs
+                .FirstOrDefaultAsync(v => v.Cultivo == cultivo && v.Variedad == variedad);
             
-            if (producto == null)
+            if (variedadModific == null)
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "Temporada no encontrado." });
+                return NotFound(new { isSuccess = false, status = 404, message = "Variedad no encontrada." });
             }
 
-            producto.Temporada = temporadaa.Temporada;
-            producto.Actual = temporadaa.Actual;
-            producto.Descripcion = temporadaa.Descripcion;
-            producto.FechaInicio = temporadaa.FechaInicio;
-            producto.FechaFin = temporadaa.FechaFin;
+            variedadModific.Cultivo = variedades.Cultivo;
+            variedadModific.Variedad = variedades.Variedad;
+            variedadModific.NombreAbreviatura = variedades.NombreAbreviatura;
+            variedadModific.Descripcion = variedades.Descripcion;
+            
            
             
             await this.appDbContext.SaveChangesAsync();
             return Ok(new
             {
-                isSuccess = true, status = 200, message = "Temporada actualizada exitosamente.", producto = producto
+                isSuccess = true, status = 200, message = "Variedad actualizada exitosamente.", variedadModific = variedadModific
             });
         }
         
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Destroy(string id)
+        [HttpDelete("{cultivo}/{variedad}")]
+        public async Task<IActionResult> Destroy(string cultivo, string variedad)
         {
-            var temporada = await this.appDbContext.TemporadaTbs.FindAsync(id);
+            var variedade = await this.appDbContext.VariedadTbs
+                .FirstOrDefaultAsync(v => v.Cultivo == cultivo && v.Variedad == variedad);
             
-            if (temporada == null)
+            if (variedade == null)
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "Temporada no encontrada." });
+                return NotFound(new { isSuccess = false, status = 404, message = "variedad no encontrada." });
             }
             
-            this.appDbContext.TemporadaTbs.Remove(temporada);
+            this.appDbContext.VariedadTbs.Remove(variedade);
             await this.appDbContext.SaveChangesAsync();
             
-            return Ok(new { isSuccess = true, status = 200, message = "Temporada eliminada exitosamente." });
+            return Ok(new { isSuccess = true, status = 200, message = "variedad eliminada exitosamente." });
         }
-    }    
+    }
 }
-

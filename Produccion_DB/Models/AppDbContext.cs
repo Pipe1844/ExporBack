@@ -36,7 +36,6 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<CultivoProductoFaseTb> CultivoProductoFaseTbs { get; set; }
 
     public virtual DbSet<DdtLaborTb> DdtLaborTbs { get; set; }
-
     public virtual DbSet<DepartamentoTb> DepartamentoTbs { get; set; }
 
     public virtual DbSet<EntregaProductoTb> EntregaProductoTbs { get; set; }
