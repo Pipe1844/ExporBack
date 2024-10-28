@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Produccion_DB.Models;
+using Produccion_DB.DTOs; 
 
 namespace Produccion_DB.Controllers
 {
@@ -46,27 +47,28 @@ namespace Produccion_DB.Controllers
 
         // POST: api/v2/usuarios
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] UsuarioTb nuevoUsuario)
+        public async Task<IActionResult> Store([FromBody] UsuarioTb usuario)
         {
-            // Verificar si el modelo es válido
-            if (!ModelState.IsValid)
+            if (usuario == null)
             {
                 return BadRequest(new { isSuccess = false, status = 400, message = "Datos de usuario inválidos." });
             }
 
-            // Verificar si el usuario ya existe
-            var usuarioExistente = await _appDbContext.UsuarioTbs.FindAsync(nuevoUsuario.Usuario);
-            if (usuarioExistente != null)
+            // Verificar campos requeridos
+            if (string.IsNullOrEmpty(usuario.Usuario) ||
+                string.IsNullOrEmpty(usuario.RolDeUsuario) ||
+                string.IsNullOrEmpty(usuario.IdEmpleado))
             {
-                return Conflict(new { isSuccess = false, status = 409, message = "El usuario ya existe." });
+                return BadRequest(new { isSuccess = false, status = 400, message = "Faltan campos requeridos." });
             }
 
-            // Agregar el nuevo usuario a la base de datos
-            await _appDbContext.UsuarioTbs.AddAsync(nuevoUsuario);
+            await _appDbContext.UsuarioTbs.AddAsync(usuario);
             await _appDbContext.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(Destroy), new { usuario = nuevoUsuario.Usuario }, 
-                new { isSuccess = true, status = 201, message = "Usuario creado exitosamente.", usuario = nuevoUsuario });
+            return Ok(new
+            {
+                isSuccess = true, status = 201, message = "Usuario creado exitosamente.", usuario
+            });
         }
 
         // PUT: api/v2/usuarios/{id}
