@@ -24,7 +24,7 @@ namespace Produccion_DB.Controllers
 
             if (usuarios == null || !usuarios.Any())
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "No se encontraron usuarios." });
+                return Ok(new { isSuccess = true, status = 204, Usuarios=new{} });
             }
 
             return Ok(new { isSuccess = true, status = 200, usuarios });

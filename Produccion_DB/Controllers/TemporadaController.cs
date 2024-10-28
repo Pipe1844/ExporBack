@@ -27,11 +27,11 @@ namespace Produccion_DB.Controllers
                 // Verificamos si la lista está vacía
                 if (temporadas == null || !temporadas.Any())
                 {
-                    return NotFound(new 
+                    return Ok(new 
                     { 
-                        isSuccess = false, 
-                        status = 404, 
-                        message = "No se encontraron artículos en la base de datos." 
+                        isSuccess = true, 
+                        status = 204, 
+                        Temporadas = new {} 
                     });
                 }
                 return Ok(new 

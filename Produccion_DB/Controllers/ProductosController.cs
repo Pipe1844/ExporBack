@@ -24,10 +24,10 @@ namespace Produccion_DB.Controllers
 
             if (productos == null || !productos.Any())
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "No se encontraron productos." });
+                return Ok(new { isSuccess = true, status = 204, Productos=new{} });
             }
 
-            return Ok(new { isSuccess = true, status = 200, productos });
+            return Ok(new { isSuccess = true, status = 200, Productos=productos });
         }
 
         // GET: api/v2/productos/{id}
