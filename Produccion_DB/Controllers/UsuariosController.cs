@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Produccion_DB.Models;
+using Produccion_DB.DTOs;
 
 namespace Produccion_DB.Controllers
 {
@@ -20,96 +21,155 @@ namespace Produccion_DB.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var usuarios = await _appDbContext.UsuarioTbs.ToListAsync();
-
-            if (usuarios == null || !usuarios.Any())
+            try
             {
-                return Ok(new { isSuccess = true, status = 204, Usuarios=new{} });
-            }
+                var usuarios = await _appDbContext.UsuarioTbs.ToListAsync();
 
-            return Ok(new { isSuccess = true, status = 200, usuarios });
+                if (usuarios == null || !usuarios.Any())
+                {
+                    return Ok(new { isSuccess = true, status = 204, Usuarios = new { } });
+                }
+
+                return Ok(new { isSuccess = true, status = 200, usuarios });
+            }
+            catch (DbUpdateException dbEx)
+            {
+                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error al acceder a la base de datos.", error = dbEx.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { isSuccess = false, status = 500, message = "Ocurrió un error inesperado.", error = ex.Message });
+            }
         }
 
         // GET: api/v2/usuarios/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> Show(string id)
         {
-            var usuario = await _appDbContext.UsuarioTbs.FindAsync(id);
-
-            if (usuario == null)
+            try
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "Usuario no encontrado." });
-            }
+                var usuario = await _appDbContext.UsuarioTbs.FindAsync(id);
 
-            return Ok(new { isSuccess = true, status = 200, usuario });
+                if (usuario == null)
+                {
+                    return NotFound(new { isSuccess = false, status = 404, message = "Usuario no encontrado." });
+                }
+
+                return Ok(new { isSuccess = true, status = 200, usuario });
+            }
+            catch (DbUpdateException dbEx)
+            {
+                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error al acceder a la base de datos.", error = dbEx.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { isSuccess = false, status = 500, message = "Ocurrió un error inesperado.", error = ex.Message });
+            }
         }
 
         // POST: api/v2/usuarios
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] UsuarioTb nuevoUsuario)
+        public async Task<IActionResult> Store([FromBody] UsuarioTb usuario)
         {
-            // Verificar si el modelo es válido
-            if (!ModelState.IsValid)
+            if (usuario == null)
             {
                 return BadRequest(new { isSuccess = false, status = 400, message = "Datos de usuario inválidos." });
             }
 
-            // Verificar si el usuario ya existe
-            var usuarioExistente = await _appDbContext.UsuarioTbs.FindAsync(nuevoUsuario.Usuario);
-            if (usuarioExistente != null)
+            // Verificar campos requeridos
+            if (string.IsNullOrEmpty(usuario.Usuario) ||
+                string.IsNullOrEmpty(usuario.RolDeUsuario) ||
+                string.IsNullOrEmpty(usuario.IdEmpleado))
             {
-                return Conflict(new { isSuccess = false, status = 409, message = "El usuario ya existe." });
+                return BadRequest(new { isSuccess = false, status = 400, message = "Faltan campos requeridos." });
             }
 
-            // Agregar el nuevo usuario a la base de datos
-            await _appDbContext.UsuarioTbs.AddAsync(nuevoUsuario);
-            await _appDbContext.SaveChangesAsync();
+            // Verificar si el ID_Empleado ya existe
+            var existeEmpleado = await _appDbContext.UsuarioTbs
+                .AnyAsync(u => u.IdEmpleado == usuario.IdEmpleado);
+    
+            if (existeEmpleado)
+            {
+                return BadRequest(new { isSuccess = false, status = 400, message = "El ID de empleado ya está en uso." });
+            }
 
-            return CreatedAtAction(nameof(Destroy), new { usuario = nuevoUsuario.Usuario }, 
-                new { isSuccess = true, status = 201, message = "Usuario creado exitosamente.", usuario = nuevoUsuario });
+            try
+            {
+                await _appDbContext.UsuarioTbs.AddAsync(usuario);
+                await _appDbContext.SaveChangesAsync();
+
+                return Ok(new { isSuccess = true, status = 201, message = "Usuario creado exitosamente.", usuario });
+            }
+            catch (DbUpdateException dbEx)
+            {
+                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error al guardar en la base de datos.", error = dbEx.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { isSuccess = false, status = 500, message = "Ocurrió un error inesperado.", error = ex.Message });
+            }
         }
+
+
 
         // PUT: api/v2/usuarios/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, [FromBody] UsuarioTb usuarioActualizado)
         {
-            var usuario = await _appDbContext.UsuarioTbs.FindAsync(id);
-
-            if (usuario == null)
+            try
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "Usuario no encontrado." });
+                var usuario = await _appDbContext.UsuarioTbs.FindAsync(id);
+
+                if (usuario == null)
+                {
+                    return NotFound(new { isSuccess = false, status = 404, message = "Usuario no encontrado." });
+                }
+
+                usuario.RolDeUsuario = usuarioActualizado.RolDeUsuario;
+                usuario.Contrasena = usuarioActualizado.Contrasena;
+                //usuario.FechaCreacion = usuarioActualizado.FechaCreacion;
+                usuario.IdEmpleado = usuarioActualizado.IdEmpleado;
+
+                await _appDbContext.SaveChangesAsync();
+
+                return Ok(new { isSuccess = true, status = 200, message = "Usuario actualizado exitosamente.", usuario });
             }
-
-            usuario.RolDeUsuario = usuarioActualizado.RolDeUsuario;
-            usuario.Contrasena = usuarioActualizado.Contrasena;
-            usuario.FechaCreacion = usuarioActualizado.FechaCreacion;
-            usuario.IdEmpleado = usuarioActualizado.IdEmpleado;
-
-            await _appDbContext.SaveChangesAsync();
-
-            return Ok(new
+            catch (DbUpdateException dbEx)
             {
-                isSuccess = true, status = 200, message = "Usuario actualizado exitosamente.", usuario
-            });
+                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error al actualizar en la base de datos.", error = dbEx.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { isSuccess = false, status = 500, message = "Ocurrió un error inesperado.", error = ex.Message });
+            }
         }
-        
+
         // DELETE: api/v2/usuarios/{usuario}
         [HttpDelete("{usuario}")]
         public async Task<IActionResult> Destroy(string usuario)
         {
-            var usuarioEncontrado = await _appDbContext.UsuarioTbs.FindAsync(usuario);
-
-            if (usuarioEncontrado == null)
+            try
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "Usuario no encontrado." });
+                var usuarioEncontrado = await _appDbContext.UsuarioTbs.FindAsync(usuario);
+
+                if (usuarioEncontrado == null)
+                {
+                    return NotFound(new { isSuccess = false, status = 404, message = "Usuario no encontrado." });
+                }
+
+                _appDbContext.UsuarioTbs.Remove(usuarioEncontrado);
+                await _appDbContext.SaveChangesAsync();
+
+                return Ok(new { isSuccess = true, status = 200, message = "Usuario eliminado exitosamente." });
             }
-
-            _appDbContext.UsuarioTbs.Remove(usuarioEncontrado);
-            await _appDbContext.SaveChangesAsync();
-
-            return Ok(new { isSuccess = true, status = 200, message = "Usuario eliminado exitosamente." });
+            catch (DbUpdateException dbEx)
+            {
+                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error al eliminar en la base de datos.", error = dbEx.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { isSuccess = false, status = 500, message = "Ocurrió un error inesperado.", error = ex.Message });
+            }
         }
-
-
     }
 }
