@@ -100,6 +100,7 @@ namespace Produccion_DB.Controllers
 
                 return Ok(new { isSuccess = true, status = 201, message = "Usuario creado exitosamente.", usuario });
             }
+            
             catch (DbUpdateException dbEx)
             {
                 return StatusCode(500, new { isSuccess = false, status = 500, message = "Error al guardar en la base de datos.", error = dbEx.Message });
