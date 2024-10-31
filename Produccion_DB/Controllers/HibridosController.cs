@@ -4,41 +4,41 @@ using Produccion_DB.Models;
 
 namespace Produccion_DB.Controllers
 {
-    [Route("api/v2/temporadas")]
+    [Route("api/v2/hibridos")]
     [ApiController]
-    
-    public class TemporadaController : ControllerBase
+
+    public class HibridosController : Controller
     {
         private readonly AppDbContext appDbContext;
 
-        public TemporadaController(AppDbContext appDbContext)
+        public HibridosController(AppDbContext appDbContext)
         {
             this.appDbContext = appDbContext;
         }
-
+        
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             try
             {
-                // Intentamos obtener la lista de temporadas
-                var temporadas = await this.appDbContext.TemporadaTbs.ToListAsync();
+                // Intentamos obtener la lista de hibridos
+                var hibridos = await this.appDbContext.HibridosTbs.ToListAsync();
 
                 // Verificamos si la lista está vacía
-                if (temporadas == null || !temporadas.Any())
+                if (hibridos == null || !hibridos.Any())
                 {
                     return Ok(new 
                     { 
                         isSuccess = true, 
                         status = 204, 
-                        Temporadas = new {} 
+                        Hibridos = new {} 
                     });
                 }
                 return Ok(new 
                 { 
                     isSuccess = true, 
                     status = 200, 
-                    Temporadas = temporadas 
+                    Hibridos = hibridos 
                 });
             }
             catch (DbUpdateException dbEx)
@@ -65,20 +65,21 @@ namespace Produccion_DB.Controllers
             }
         }
         
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Show(string id)
+        [HttpGet("{cultivo}/{variedad}/{hibrido}")]
+        public async Task<IActionResult> Show(string cultivo, string variedad, string hibrido)
         {
             try
             {
-                var temporada = await this.appDbContext.TemporadaTbs.FindAsync(id);
+                var hibridoBuscar = await this.appDbContext.HibridosTbs
+                .FirstOrDefaultAsync(h => h.Cultivo == cultivo && h.Variedad == variedad && h.Hibrido==hibrido);
         
-                if (temporada == null)
+                if (hibridoBuscar == null)
                 {
                     return NotFound(new 
                     { 
                         isSuccess = false, 
                         status = 404, 
-                        message = "Artículo no encontrado." 
+                        message = "hibrido no encontrado." 
                     });
                 }
 
@@ -86,7 +87,7 @@ namespace Produccion_DB.Controllers
                 { 
                     isSuccess = true, 
                     status = 200, 
-                    Temporadas = temporada 
+                    Hibrido = hibridoBuscar 
                 });
             }
             catch (DbUpdateException dbEx)
@@ -112,9 +113,9 @@ namespace Produccion_DB.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> Store([FromBody] TemporadaTb temporada)
+        public async Task<IActionResult> Store([FromBody] HibridosTb hibrido)
         {
-            if (temporada == null)
+            if (hibrido == null)
             {
                 return BadRequest(new 
                 { 
@@ -126,15 +127,15 @@ namespace Produccion_DB.Controllers
 
             try
             {
-                await this.appDbContext.TemporadaTbs.AddAsync(temporada);
+                await this.appDbContext.HibridosTbs.AddAsync(hibrido);
                 await this.appDbContext.SaveChangesAsync();
 
                 return Ok(new 
                 { 
                     isSuccess = true, 
                     status = 201, 
-                    message = "Temporada creadoa con éxito.", 
-                    Temporada = temporada 
+                    message = "Hibrido creado con éxito.", 
+                    Variedad = hibrido 
                 });
             }
             catch (DbUpdateException dbEx)
@@ -159,45 +160,49 @@ namespace Produccion_DB.Controllers
             }
         }
         
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] TemporadaTb temporadaa)
+        [HttpPut("{cultivo}/{variedad}/{hibrido}")]
+        public async Task<IActionResult> Update(string cultivo, string variedad, string hibrido, [FromBody] HibridosTb hibridos)
         {
-            var producto = await this.appDbContext.TemporadaTbs.FindAsync(id);
+            var hibridosModif = await this.appDbContext.HibridosTbs
+                .FirstOrDefaultAsync(h => h.Cultivo == cultivo && h.Variedad == variedad && h.Hibrido==hibrido);
             
-            if (producto == null)
+            if (hibridosModif == null)
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "Temporada no encontrado." });
+                return NotFound(new { isSuccess = false, status = 404, message = "Hibrido no encontrado." });
             }
 
-            producto.Temporada = temporadaa.Temporada;
-            producto.Actual = temporadaa.Actual;
-            producto.Descripcion = temporadaa.Descripcion;
-            producto.FechaInicio = temporadaa.FechaInicio;
-            producto.FechaFin = temporadaa.FechaFin;
+            hibridosModif.Cultivo = hibridos.Cultivo;
+            hibridosModif.Variedad = hibridos.Variedad;
+            hibridosModif.Hibrido = hibridos.Hibrido;
+            hibridosModif.Identificador = hibridos.Identificador;
+            hibridosModif.Abreviatura = hibridos.Abreviatura;
+            hibridosModif.Descripcion = hibridos.Descripcion;
+            hibridosModif.Activo = hibridos.Activo;
+            
            
             
             await this.appDbContext.SaveChangesAsync();
             return Ok(new
             {
-                isSuccess = true, status = 200, message = "Temporada actualizada exitosamente.", producto = producto
+                isSuccess = true, status = 200, message = "Hibrido actualizado exitosamente.", hibridoModificado = hibridosModif
             });
         }
         
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Destroy(string id)
+        [HttpDelete("{cultivo}/{variedad}/{hibrido}")]
+        public async Task<IActionResult> Destroy(string cultivo, string variedad, string hibrido)
         {
-            var temporada = await this.appDbContext.TemporadaTbs.FindAsync(id);
+            var hibridoDel = await this.appDbContext.HibridosTbs
+                .FirstOrDefaultAsync(h => h.Cultivo == cultivo && h.Variedad == variedad && h.Hibrido == hibrido);
             
-            if (temporada == null)
+            if (hibridoDel == null)
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "Temporada no encontrada." });
+                return NotFound(new { isSuccess = false, status = 404, message = "hibrido no encontrado." });
             }
             
-            this.appDbContext.TemporadaTbs.Remove(temporada);
+            this.appDbContext.HibridosTbs.Remove(hibridoDel);
             await this.appDbContext.SaveChangesAsync();
             
-            return Ok(new { isSuccess = true, status = 200, message = "Temporada eliminada exitosamente." });
+            return Ok(new { isSuccess = true, status = 200, message = "hibrido eliminado exitosamente." });
         }
-    }    
+    }
 }
-

@@ -27,11 +27,11 @@ namespace Produccion_DB.Controllers
                        // Verificamos si la lista está vacía
                        if (departamentos == null || !departamentos.Any())
                        {
-                           return NotFound(new 
+                           return Ok(new 
                            { 
-                               isSuccess = false, 
-                               status = 404, 
-                               message = "No se encontraron Departamentos en la base de datos." 
+                               isSuccess = true, 
+                               status = 204, 
+                               Departamentos = new {}
                            });
                        }
                        return Ok(new 

@@ -505,7 +505,7 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Encargado)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-        });
+        });    
 
         modelBuilder.Entity<EntregaProductoTb>(entity =>
         {

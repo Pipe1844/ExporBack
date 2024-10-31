@@ -27,11 +27,11 @@ namespace Produccion_DB.Controllers
                 // Verificamos si la lista está vacía
                 if (variedades == null || !variedades.Any())
                 {
-                    return NotFound(new 
+                    return Ok(new 
                     { 
-                        isSuccess = false, 
-                        status = 404, 
-                        message = "No se encontraron variedades en la base de datos." 
+                        isSuccess = true, 
+                        status = 204, 
+                        Variedades = new {} 
                     });
                 }
                 return Ok(new 
