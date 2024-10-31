@@ -27,7 +27,7 @@ namespace Produccion_DB.Controllers
 
                 if (labores == null || !labores.Any())
                 {
-                    return Ok(new { isSuccess = true, status = 204, labores = labores });
+                    return Ok(new { isSuccess = true, status = 204, labores = new {} });
                     //return NotFound(new { isSuccess = false, status = 404, message = "No se encontraron Labores." });
                 }
 
