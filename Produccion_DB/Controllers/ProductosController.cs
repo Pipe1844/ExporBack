@@ -27,7 +27,7 @@ namespace Produccion_DB.Controllers
 
                 if (productos == null || !productos.Any())
                 {
-                    return Ok(new { isSuccess = true, status = 204, Productos = new {} });
+                    return Ok(new { isSuccess = true, status = 204, Productos = new List<Object>() });
                 }
 
                 return Ok(new { isSuccess = true, status = 200, Productos = productos });

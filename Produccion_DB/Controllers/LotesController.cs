@@ -30,7 +30,7 @@ namespace Produccion_DB.Controllers
                            { 
                                isSuccess = true, 
                                status = 204, 
-                               Lotes = new {} 
+                               Lotes = new List<Object>() 
                            });
                        }
                        return Ok(new 

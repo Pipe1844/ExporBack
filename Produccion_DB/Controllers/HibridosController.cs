@@ -31,7 +31,7 @@ namespace Produccion_DB.Controllers
                     { 
                         isSuccess = true, 
                         status = 204, 
-                        Hibridos = new {} 
+                        Hibridos = new List<Object>() 
                     });
                 }
                 return Ok(new 
