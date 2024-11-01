@@ -25,7 +25,7 @@ namespace Produccion_DB.Controllers
 
             if (labores == null || !labores.Any())
             {
-                return Ok(new { isSuccess = true, status = 204, labores = new {} });
+                return Ok(new { isSuccess = true, status = 204, labores = new { } });
             }
 
             return Ok(new { isSuccess = true, status = 200, labores = labores });
@@ -59,7 +59,7 @@ namespace Produccion_DB.Controllers
 
             return Ok(new
             {
-                isSuccess = true, status = 201, message = "Labor creado exitosamente.", articulo = labor
+                isSuccess = true, status = 201, message = "Labor creado exitosamente.", labor = labor
             });
         }
 
@@ -93,7 +93,7 @@ namespace Produccion_DB.Controllers
         {
             var labor = await this.appDbContext.LaboresTbs.FindAsync(id);
 
-            if (labor == null) 
+            if (labor == null)
             {
                 return NotFound(new { isSuccess = false, status = 404, message = "Labor no encontrado." });
             }

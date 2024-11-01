@@ -1702,10 +1702,10 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(500)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.DepartamentoNavigation).WithMany(p => p.LaboresTbs)
+            /*entity.HasOne(d => d.DepartamentoNavigation).WithMany(p => p.LaboresTbs)
                 .HasForeignKey(d => d.Departamento)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefDepartamento_TB33");
+                .HasConstraintName("RefDepartamento_TB33");*/
         });
 
         modelBuilder.Entity<LcCtraspSembradorTb>(entity =>
