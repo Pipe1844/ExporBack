@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Produccion_DB.Models;
-using Produccion_DB.DTOs;
+using Produccion_DB.Models.AuxiliarModels;
 
 namespace Produccion_DB.Controllers
 {
@@ -69,8 +69,11 @@ namespace Produccion_DB.Controllers
 
         // POST: api/v2/usuarios
         [HttpPost]
-        public async Task<IActionResult> Store([FromBody] UsuarioTb usuario)
+        public async Task<IActionResult> Store([FromBody] UsuarioDep request)
         {
+            var usuario = request.Usuario;
+            var departamentos = request.Departamentos;
+            
             if (usuario == null)
             {
                 return BadRequest(new { isSuccess = false, status = 400, message = "Datos de usuario inválidos." });
@@ -95,20 +98,38 @@ namespace Produccion_DB.Controllers
 
             try
             {
+                // Agregar los departamentos a la relación muchos a muchos
+                if (departamentos != null && departamentos.Count > 0)
+                {
+                    foreach (var departamentoId in departamentos)
+                    {
+                        var departamento = await _appDbContext.DepartamentoTbs
+                            .FirstOrDefaultAsync(d => d.Departamento == departamentoId);
+                
+                        if (departamento != null)
+                        {
+                            usuario.Departamentos.Add(departamento);
+                        }
+                    }
+                }
+
                 await _appDbContext.UsuarioTbs.AddAsync(usuario);
                 await _appDbContext.SaveChangesAsync();
-
+                
                 return Ok(new { isSuccess = true, status = 201, message = "Usuario creado exitosamente.", usuario });
             }
+            
             catch (DbUpdateException dbEx)
             {
                 return StatusCode(500, new { isSuccess = false, status = 500, message = "Error al guardar en la base de datos.", error = dbEx.Message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Ocurrió un error inesperado.", error = ex.Message });
+                return StatusCode(500, new { isSuccess = false, status = 500, message = "Ocurrió un error inesperado.", error = ex });
             }
         }
+        
+        
 
 
 

@@ -74,15 +74,10 @@ namespace Produccion_DB.Controllers
                 if (string.IsNullOrEmpty(producto.NombreDescriptivo) ||
                     string.IsNullOrEmpty(producto.TipoUso) ||
                     string.IsNullOrEmpty(producto.NombreComercial) ||
-                    string.IsNullOrEmpty(producto.UnidadMedida) ||
-                    string.IsNullOrEmpty(producto.IngredienteActivo) ||
-                    (producto.ConcentracionIactivo == null || string.IsNullOrEmpty(producto.ConcentracionIactivo.ToString())) ||
-                    (producto.Activo == null || string.IsNullOrEmpty(producto.Activo.ToString())))
+                    string.IsNullOrEmpty(producto.UnidadMedida))
                 {
                     return BadRequest(new { isSuccess = false, status = 400, message = "Faltan campos requeridos." });
                 }
-
-
                 await _appDbContext.ProductosTbs.AddAsync(producto);
                 await _appDbContext.SaveChangesAsync();
 

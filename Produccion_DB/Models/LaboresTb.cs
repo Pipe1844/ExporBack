@@ -11,7 +11,7 @@ public partial class LaboresTb
 
     public string? Descripcion { get; set; }
 
-    public virtual DepartamentoTb DepartamentoNavigation { get; set; } = null!;
+    //public virtual DepartamentoTb DepartamentoNavigation { get; set; } = null!;
 
     public virtual ICollection<KnLaboresLotesTb> KnLaboresLotesTbs { get; set; } = new List<KnLaboresLotesTb>();
 
