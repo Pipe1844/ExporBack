@@ -1166,10 +1166,10 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.VariedadTb).WithMany(p => p.HibridosTbs)
+           /* entity.HasOne(d => d.VariedadTb).WithMany(p => p.HibridosTbs)
                 .HasForeignKey(d => new { d.Cultivo, d.Variedad })
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefVariedad_TB18");
+                .HasConstraintName("RefVariedad_TB18"); */
         });
 
         modelBuilder.Entity<HorasRiegoTb>(entity =>
