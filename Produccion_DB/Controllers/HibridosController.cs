@@ -31,7 +31,7 @@ namespace Produccion_DB.Controllers
                     { 
                         isSuccess = true, 
                         status = 204, 
-                        Hibridos = new {} 
+                        Hibridos = new List<Object>() 
                     });
                 }
                 return Ok(new 
@@ -135,7 +135,7 @@ namespace Produccion_DB.Controllers
                     isSuccess = true, 
                     status = 201, 
                     message = "Hibrido creado con éxito.", 
-                    Variedad = hibrido 
+                    Hibrido = hibrido 
                 });
             }
             catch (DbUpdateException dbEx)

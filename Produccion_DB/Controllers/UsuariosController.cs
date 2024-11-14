@@ -27,7 +27,7 @@ namespace Produccion_DB.Controllers
 
                 if (usuarios == null || !usuarios.Any())
                 {
-                    return Ok(new { isSuccess = true, status = 204, Usuarios = new { } });
+                    return Ok(new { isSuccess = true, status = 204, Usuarios = new List<Object>() });
                 }
 
                 return Ok(new { isSuccess = true, status = 200, usuarios });
@@ -66,14 +66,13 @@ namespace Produccion_DB.Controllers
                 return StatusCode(500, new { isSuccess = false, status = 500, message = "Ocurrió un error inesperado.", error = ex.Message });
             }
         }
-
+        
         // POST: api/v2/usuarios
         [HttpPost]
         public async Task<IActionResult> Store([FromBody] UsuarioDep request)
         {
             var usuario = request.Usuario;
-            var departamentos = request.Departamentos;
-            
+
             if (usuario == null)
             {
                 return BadRequest(new { isSuccess = false, status = 400, message = "Datos de usuario inválidos." });
@@ -90,7 +89,7 @@ namespace Produccion_DB.Controllers
             // Verificar si el ID_Empleado ya existe
             var existeEmpleado = await _appDbContext.UsuarioTbs
                 .AnyAsync(u => u.IdEmpleado == usuario.IdEmpleado);
-    
+
             if (existeEmpleado)
             {
                 return BadRequest(new { isSuccess = false, status = 400, message = "El ID de empleado ya está en uso." });
@@ -98,27 +97,12 @@ namespace Produccion_DB.Controllers
 
             try
             {
-                // Agregar los departamentos a la relación muchos a muchos
-                if (departamentos != null && departamentos.Count > 0)
-                {
-                    foreach (var departamentoId in departamentos)
-                    {
-                        var departamento = await _appDbContext.DepartamentoTbs
-                            .FirstOrDefaultAsync(d => d.Departamento == departamentoId);
-                
-                        if (departamento != null)
-                        {
-                            usuario.Departamentos.Add(departamento);
-                        }
-                    }
-                }
-
+                // Agregar el usuario a la base de datos sin manejar departamentos
                 await _appDbContext.UsuarioTbs.AddAsync(usuario);
                 await _appDbContext.SaveChangesAsync();
-                
+
                 return Ok(new { isSuccess = true, status = 201, message = "Usuario creado exitosamente.", usuario });
             }
-            
             catch (DbUpdateException dbEx)
             {
                 return StatusCode(500, new { isSuccess = false, status = 500, message = "Error al guardar en la base de datos.", error = dbEx.Message });
@@ -128,6 +112,7 @@ namespace Produccion_DB.Controllers
                 return StatusCode(500, new { isSuccess = false, status = 500, message = "Ocurrió un error inesperado.", error = ex });
             }
         }
+
         
         
 

@@ -23,7 +23,7 @@ public partial class HibridosTb
 
     public virtual ICollection<KnLotesCanaTb> KnLotesCanaTbs { get; set; } = new List<KnLotesCanaTb>();
 
-    public virtual VariedadTb VariedadTb { get; set; } = null!;
+   // public virtual VariedadTb VariedadTb { get; set; } = null!;
 
     public virtual ICollection<VvLotesSemillaTb> VvLotesSemillaTbs { get; set; } = new List<VvLotesSemillaTb>();
 }
