@@ -36,6 +36,8 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<CultivoProductoFaseTb> CultivoProductoFaseTbs { get; set; }
 
     public virtual DbSet<DdtLaborTb> DdtLaborTbs { get; set; }
+    
+    public virtual DbSet<DepUsuarioTb> DepUsuarioTBs { get; set; }
     public virtual DbSet<DepartamentoTb> DepartamentoTbs { get; set; }
 
     public virtual DbSet<EntregaProductoTb> EntregaProductoTbs { get; set; }
@@ -486,6 +488,44 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(d => new { d.Temporada, d.SiembraNumero, d.Departamento, d.Labor, d.AliasLabor })
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("RefLabor_T_TB52");
+        });
+        
+        modelBuilder.Entity<DepUsuarioTb>(entity =>
+        {
+            entity.HasKey(e => new { e.Usuario, e.Departamento })
+                .HasName("PK23")
+                .IsClustered(false);
+
+            entity.ToTable("Dep_Usuario_TB", "pd");
+
+            entity.Property(e => e.Usuario)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+
+            entity.Property(e => e.Departamento)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            /*
+            entity.Property(e => e.FechaAsignacion).HasColumnName("Fecha_Asignacion");
+
+            entity.Property(e => e.Estado)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasDefaultValue("Activo");
+
+            entity.HasOne(d => d.UsuarioNavigation)
+                .WithMany(p => p.Departamentos)
+                .HasForeignKey(d => d.Usuario)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("RefUsuario_TB104");
+
+            entity.HasOne(d => d.DepartamentoNavigation)
+                .WithMany(p => p.Usuarios)
+                .HasForeignKey(d => d.Departamento)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("RefDepartamento_TB105");
+                */
         });
 
         modelBuilder.Entity<DepartamentoTb>(entity =>
