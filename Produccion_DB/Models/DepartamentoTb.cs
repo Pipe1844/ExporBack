@@ -19,5 +19,7 @@ public partial class DepartamentoTb
 
     public virtual ICollection<LaboresTb> LaboresTbs { get; set; } = new List<LaboresTb>();
 
-    public virtual ICollection<UsuarioTb> Usuarios { get; set; } = new List<UsuarioTb>();
+    public virtual ICollection<DepUsuarioTb> DepUsuarios { get; set; } = new List<DepUsuarioTb>();
+    
+    //public virtual ICollection<UsuarioTb> Usuarios { get; set; } = new List<UsuarioTb>();
 }

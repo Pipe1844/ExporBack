@@ -505,6 +505,18 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Departamento)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            //
+            entity.HasOne(e => e.UsuarioTb)
+                .WithMany(u => u.DepUsuarios)
+                .HasForeignKey(e => e.Usuario)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("RefUsuario_TB104");
+
+            entity.HasOne(e => e.DepartamentoTb)
+                .WithMany(d => d.DepUsuarios)
+                .HasForeignKey(e => e.Departamento)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("RefDepartamento_TB105");
 
             /*
             entity.Property(e => e.FechaAsignacion).HasColumnName("Fecha_Asignacion");
@@ -545,6 +557,12 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Encargado)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            //
+            entity.HasMany(e => e.DepUsuarios)
+                .WithOne(e => e.DepartamentoTb)
+                .HasForeignKey(e => e.Departamento)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("RefDepartamento_TB105");
         });    
 
         modelBuilder.Entity<EntregaProductoTb>(entity =>
@@ -2712,7 +2730,13 @@ public partial class AppDbContext : DbContext
                 .HasDefaultValue("GENERAL")
                 .HasColumnName("Rol_De_Usuario");
 
-            entity.HasMany(d => d.Departamentos).WithMany(p => p.Usuarios)
+            entity.HasMany(e => e.DepUsuarios)
+                .WithOne(e => e.UsuarioTb)
+                .HasForeignKey(e => e.Usuario)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("RefUsuario_TB104");
+            
+            /*entity.HasMany(d => d.Departamentos).WithMany(p => p.Usuarios)
                 .UsingEntity<Dictionary<string, object>>(
                     "DepUsuarioTb",
                     r => r.HasOne<DepartamentoTb>().WithMany()
@@ -2734,7 +2758,7 @@ public partial class AppDbContext : DbContext
                         j.IndexerProperty<string>("Departamento")
                             .HasMaxLength(50)
                             .IsUnicode(false);
-                    });
+                    });*/
         });
 
         modelBuilder.Entity<ValvulasTb>(entity =>
