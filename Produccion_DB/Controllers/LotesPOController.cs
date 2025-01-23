@@ -4,13 +4,13 @@ using Produccion_DB.Models;
 
 namespace Produccion_DB.Controllers
 {
-    [Route("api/v2/Lotes")]
+    [Route("api/v2/LotesPO")]
     [ApiController]
-   public class LotesController : Controller
+   public class LotesPOController : Controller
    {
        private readonly AppDbContext appDbContext;
        
-       public LotesController(AppDbContext appDbContext)
+       public LotesPOController(AppDbContext appDbContext)
        {
            this.appDbContext = appDbContext;
        }
@@ -20,24 +20,24 @@ namespace Produccion_DB.Controllers
                {
                    try
                    {
-                       // Intentamos obtener la lista de temporadas
-                       var lotes = await this.appDbContext.LotesFisicosTbs.ToListAsync();
+                       // Intentamos obtener la lista de lotesPO
+                       var lotePo = await this.appDbContext.LotesPoTbs.ToListAsync();
        
                        // Verificamos si la lista está vacía
-                       if (lotes == null || !lotes.Any())
+                       if (lotePo == null || !lotePo.Any())
                        {
                            return Ok(new 
                            { 
                                isSuccess = true, 
                                status = 204, 
-                               Lotes = new List<Object>() 
+                               LotesPO = new List<Object>() 
                            });
                        }
                        return Ok(new 
                        { 
                            isSuccess = true, 
                            status = 200, 
-                           Lotes = lotes 
+                           LotesPO = lotePo 
                        });
                    }
                    catch (DbUpdateException dbEx)
@@ -64,71 +64,23 @@ namespace Produccion_DB.Controllers
                    }
                }
                
-               
-       [HttpGet("activos")]
-       public async Task<IActionResult> lotesActivos()
-       {
-           try
-           {
-               // Intentamos obtener la lista de temporadas
-               var lotesActivos = await this.appDbContext.LotesFisicosTbs.
-                   Where(l=>l.Activo==true).ToListAsync();
-       
-               // Verificamos si la lista está vacía
-               if (lotesActivos == null || !lotesActivos.Any())
-               {
-                   return Ok(new 
-                   { 
-                       isSuccess = true, 
-                       status = 204, 
-                       LotesActivos = new List<Object>() 
-                   });
-               }
-               return Ok(new 
-               { 
-                   isSuccess = true, 
-                   status = 200, 
-                   LotesActivos = lotesActivos 
-               });
-           }
-           catch (DbUpdateException dbEx)
-           {
-               // Manejo específico de errores relacionados con la base de datos
-               return StatusCode(500, new 
-               { 
-                   isSuccess = false, 
-                   status = 500, 
-                   message = "Ocurrió un error al acceder a la base de datos.", 
-                   error = dbEx.Message 
-               });
-           }
-           catch (Exception ex)
-           {
-               // Manejo de errores generales
-               return StatusCode(500, new 
-               { 
-                   isSuccess = false, 
-                   status = 500, 
-                   message = "Ocurrió un error inesperado.", 
-                   error = ex.Message 
-               });
-           }
-       }
-               
-               [HttpGet("{id}")]
-                       public async Task<IActionResult> Show(string id)
+               [HttpGet("{temporada}/{siembraNum}/{nombreLote}/{aliasLote}")]
+                       public async Task<IActionResult> Show(string temporada, int siembraNum,string nombreLote,string aliasLote)
                        {
                            try
                            {
-                               var lote = await this.appDbContext.LotesFisicosTbs.FindAsync(id);
+                               
+                               var lotePo = await this.appDbContext.LotesPoTbs
+                                   .FirstOrDefaultAsync(lPo => lPo.Temporada == temporada && lPo.SiembraNum == siembraNum && 
+                                                               lPo.NombreLote==nombreLote && lPo.AliasLote==aliasLote);
                        
-                               if (lote == null)
+                               if (lotePo == null)
                                {
                                    return NotFound(new 
                                    { 
                                        isSuccess = false, 
                                        status = 404, 
-                                       message = "Lote no encontrado." 
+                                       message = "LotePO no encontrado." 
                                    });
                                }
                
@@ -136,7 +88,7 @@ namespace Produccion_DB.Controllers
                                { 
                                    isSuccess = true, 
                                    status = 200, 
-                                   Lotes = lote 
+                                   LotePO = lotePo 
                                });
                            }
                            catch (DbUpdateException dbEx)
@@ -162,9 +114,9 @@ namespace Produccion_DB.Controllers
                        }
                        
                        [HttpPost]
-                       public async Task<IActionResult> Store([FromBody] LotesFisicosTb lote)
+                       public async Task<IActionResult> Store([FromBody] LotesPoTb lotePo)
                        {
-                           if (lote == null)
+                           if (lotePo == null)
                            {
                                return BadRequest(new 
                                { 
@@ -176,15 +128,15 @@ namespace Produccion_DB.Controllers
 
                            try
                            {
-                               await this.appDbContext.LotesFisicosTbs.AddAsync(lote);
+                               await this.appDbContext.LotesPoTbs.AddAsync(lotePo);
                                await this.appDbContext.SaveChangesAsync();
 
                                return Ok(new 
                                { 
                                    isSuccess = true, 
                                    status = 201, 
-                                   message = "Lote creado con éxito.", 
-                                   Lote = lote 
+                                   message = "LotePO creado con éxito.", 
+                                   LotePO = lotePo 
                                });
                            }
                            catch (DbUpdateException dbEx)
@@ -208,41 +160,56 @@ namespace Produccion_DB.Controllers
                                });
                            }
                        }
-                       [HttpPut("{id}")]
-                       public async Task<IActionResult> Update(string id, [FromBody] LotesFisicosTb lote)
+                       [HttpPut("{temporada}/{siembraNum}/{nombreLote}/{aliasLote}")]
+                       public async Task<IActionResult> Update(string temporada, int siembraNum,
+                           string nombreLote,string aliasLote, [FromBody] LotesPoTb lotePO)
                        {
-                           var Lote = await this.appDbContext.LotesFisicosTbs.FindAsync(id);
+                           var lote = await this.appDbContext.LotesPoTbs
+                               .FirstOrDefaultAsync(lPo => lPo.Temporada == temporada && lPo.SiembraNum == siembraNum && 
+                                                           lPo.NombreLote==nombreLote && lPo.AliasLote==aliasLote);
             
-                           if (Lote == null)
+                           if (lote == null)
                            {
-                               return NotFound(new { isSuccess = false, status = 404, message = "Lote no encontrado." });
+                               return NotFound(new { isSuccess = false, status = 404, message = "LotePO no encontrado." });
                            }
 
-                           Lote.NombreLote = lote.NombreLote;
-                           Lote.Activo = lote.Activo;
-                           Lote.Descripcion = lote.Descripcion;
-                           Lote.Area = lote.Area;
+                           lote.Temporada = lotePO.Temporada;
+                           lote.SiembraNum = lotePO.SiembraNum;
+                           lote.NombreLote = lotePO.NombreLote;
+                           lote.AliasLote = lotePO.AliasLote;
+                           lote.FechaTrasplante = lotePO.FechaTrasplante;
+                           lote.Area = lotePO.Area;
+                           lote.Orientacion = lotePO.Orientacion;
+                           lote.Fumig = lotePO.Fumig;
+                           lote.TipoPlastico = lotePO.TipoPlastico;
+                           lote.Densidad = lotePO.Densidad;
+                           lote.ColmenasPorHa = lotePO.ColmenasPorHa;
+                           lote.ProgFertilizacion = lotePO.ProgFertilizacion;
+                           lote.ProgFitoProteccion = lotePO.ProgFitoProteccion;
                            
                            await this.appDbContext.SaveChangesAsync();
                            return Ok(new
                            {
-                               isSuccess = true, status = 200, message = "Lote actualizado exitosamente.", producto = Lote
+                               isSuccess = true, status = 200, message = "LotePO actualizado exitosamente.", lotePO = lote
                            });
                        }
-                       [HttpDelete("{id}")]
-                       public async Task<IActionResult> Destroy(string id)
+                       
+                       [HttpDelete("{temporada}/{siembraNum}/{nombreLote}/{aliasLote}")]
+                       public async Task<IActionResult> Destroy(string temporada, int siembraNum,string nombreLote,string aliasLote)
                        {
-                           var lote = await this.appDbContext.LotesFisicosTbs.FindAsync(id);
+                           var lotePo = await this.appDbContext.LotesPoTbs
+                               .FirstOrDefaultAsync(lPo => lPo.Temporada == temporada && lPo.SiembraNum == siembraNum && 
+                                                           lPo.NombreLote==nombreLote && lPo.AliasLote==aliasLote);
             
-                           if (lote == null)
+                           if (lotePo == null)
                            {
-                               return NotFound(new { isSuccess = false, status = 404, message = "Lote no encontrado." });
+                               return NotFound(new { isSuccess = false, status = 404, message = "LotePO no encontrado." });
                            }
             
-                           this.appDbContext.LotesFisicosTbs.Remove(lote);
+                           this.appDbContext.LotesPoTbs.Remove(lotePo);
                            await this.appDbContext.SaveChangesAsync();
             
-                           return Ok(new { isSuccess = true, status = 200, message = "Lote eliminado exitosamente." });
+                           return Ok(new { isSuccess = true, status = 200, message = "LotePO eliminado exitosamente." });
                        }
    } 
     
