@@ -64,20 +64,20 @@ namespace Produccion_DB.Controllers
         }
 
         // PUT api/<LaboresController>/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] LaboresTb oldLabor)
+        [HttpPut("{oldLabor}/{departamento}")]
+        public async Task<IActionResult> Update(string oldLabor, string departamento, [FromBody] LaboresTb newLabor)
         {
-            var labor = await this.appDbContext.LaboresTbs.FindAsync(id);
+            var labor = await this.appDbContext.LaboresTbs.FindAsync(oldLabor, departamento);
 
             if (labor == null)
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "Articulo no encontrado." });
+                return NotFound(new { isSuccess = false, status = 404, message = "Labor no encontrado." });
             }
 
 
-            labor.Labor = oldLabor.Labor;
-            labor.Departamento = oldLabor.Departamento;
-            labor.Descripcion = oldLabor.Descripcion;
+            labor.Labor = newLabor.Labor;
+            labor.Departamento = newLabor.Departamento;
+            labor.Descripcion = newLabor.Descripcion;
 
             await this.appDbContext.SaveChangesAsync();
 
@@ -87,12 +87,12 @@ namespace Produccion_DB.Controllers
             });
         }
 
-        // DELETE api/<LaboresController>/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Destroy(string id)
+        // DELETE api/<LaboresController>/
+        [HttpDelete("{id}/{departamento}")]
+        public async Task<IActionResult> Destroy(string id, string departamento)
         {
-            var labor = await this.appDbContext.LaboresTbs.FindAsync(id);
-
+            var labor = await this.appDbContext.LaboresTbs.FindAsync(id, departamento);
+            
             if (labor == null)
             {
                 return NotFound(new { isSuccess = false, status = 404, message = "Labor no encontrado." });
@@ -101,7 +101,7 @@ namespace Produccion_DB.Controllers
             this.appDbContext.LaboresTbs.Remove(labor);
             await this.appDbContext.SaveChangesAsync();
 
-            return Ok(new { isSuccess = true, status = 200, message = "Labor eliminado exitosamente." });
+            return Ok(new { labor = labor,isSuccess = true, status = 200, message = "Labor eliminado exitosamente." });
         }
     }
 }

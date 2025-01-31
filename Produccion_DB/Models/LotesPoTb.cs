@@ -38,8 +38,10 @@ public partial class LotesPoTb
     public virtual LcTrasplanteLoteTb? LcTrasplanteLoteTb { get; set; }
 
     public virtual ICollection<LvTermporadaTb> LvTermporadaTbs { get; set; } = new List<LvTermporadaTb>();
+    /*
 
     public virtual LotesFisicosTb NombreLoteNavigation { get; set; } = null!;
 
     public virtual TemporadaTb TemporadaNavigation { get; set; } = null!;
+    */
 }
