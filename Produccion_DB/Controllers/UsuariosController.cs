@@ -69,15 +69,12 @@ namespace Produccion_DB.Controllers
         
         // POST: api/v2/usuarios
         [HttpPost]
-        public async Task<IActionResult> Store([FromBody] UsuarioDep request)
+        public async Task<IActionResult> Store([FromBody]  UsuarioTb usuario)
         {
-            var usuario = request.Usuario;
-
             if (usuario == null)
             {
                 return BadRequest(new { isSuccess = false, status = 400, message = "Datos de usuario inválidos." });
             }
-
             // Verificar campos requeridos
             if (string.IsNullOrEmpty(usuario.Usuario) ||
                 string.IsNullOrEmpty(usuario.RolDeUsuario) ||
@@ -101,23 +98,19 @@ namespace Produccion_DB.Controllers
                 await _appDbContext.UsuarioTbs.AddAsync(usuario);
                 await _appDbContext.SaveChangesAsync();
 
-                return Ok(new { isSuccess = true, status = 201, message = "Usuario creado exitosamente.", usuario });
+                return Ok(new { isSuccess = true, status = 201, message = "Usuario creado exitosamente.", newUsuario = usuario });
             }
-            catch (DbUpdateException dbEx)
-            {
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error al guardar en la base de datos.", error = dbEx.Message });
+            catch (DbUpdateException dbEx)  
+            {  
+                var errorMessage = dbEx.InnerException != null ? dbEx.InnerException.Message : dbEx.Message;  
+                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error al guardar en la base de datos.", error = errorMessage });  
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { isSuccess = false, status = 500, message = "Ocurrió un error inesperado.", error = ex });
             }
         }
-
         
-        
-
-
-
         // PUT: api/v2/usuarios/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, [FromBody] UsuarioTb usuarioActualizado)
