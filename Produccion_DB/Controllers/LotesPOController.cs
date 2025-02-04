@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Produccion_DB.Models;
+using Microsoft.Data.SqlClient;
+
 
 namespace Produccion_DB.Controllers
 {
@@ -113,6 +115,46 @@ namespace Produccion_DB.Controllers
                            }
                        }
                        
+                       
+                       [HttpGet("{temporada}")]
+                       public async Task<IActionResult> GetByTemporada(string temporada)
+                       {
+                           try
+                           {
+                               var lotesPo = await this.appDbContext.LotesPoTbs
+                                   .Where(lPo => lPo.Temporada == temporada)
+                                   .ToListAsync();
+
+                               if (!lotesPo.Any()) 
+                               {
+                                   return NotFound(new
+                                   { 
+                                       isSuccess = false, 
+                                       status = 404, 
+                                       message = "No se encontraron lotes para la temporada proporcionada."
+                                   });
+                               }
+
+                               return Ok(new 
+                               { 
+                                   isSuccess = true, 
+                                   status = 200, 
+                                   LotesPO = lotesPo 
+                               });
+                           }
+                           catch (Exception ex)
+                           {
+                               return StatusCode(500, new 
+                               { 
+                                   isSuccess = false, 
+                                   status = 500, 
+                                   message = "Ocurrió un error inesperado.", 
+                                   error = ex.Message 
+                               });
+                           }
+                       }
+
+                       
                        [HttpPost]
                        public async Task<IActionResult> Store([FromBody] LotesPoTb lotePo)
                        {
@@ -211,6 +253,55 @@ namespace Produccion_DB.Controllers
             
                            return Ok(new { isSuccess = true, status = 200, message = "LotePO eliminado exitosamente." });
                        }
+                       
+                       
+                       [HttpPost("CopiarLotesPo")]
+                       public async Task<IActionResult> StoreBulk([FromBody] List<LotesPoTb> lotesPoList)
+                       {
+                           if (lotesPoList == null || !lotesPoList.Any())
+                           {
+                               return BadRequest(new 
+                               { 
+                                   isSuccess = false, 
+                                   status = 400, 
+                                   message = "Datos inválidos o lista vacía." 
+                               });
+                           }
+
+                           using (var transaction = await this.appDbContext.Database.BeginTransactionAsync())
+                           {
+                               try
+                               {
+                                   // Agregar múltiples registros a la base de datos de una sola vez
+                                   await this.appDbContext.LotesPoTbs.AddRangeAsync(lotesPoList);
+                                   await this.appDbContext.SaveChangesAsync();
+                                   await transaction.CommitAsync();
+
+                                   return Ok(new 
+                                   { 
+                                       isSuccess = true, 
+                                       status = 201, 
+                                       message = "LotesPO creados con éxito.", 
+                                       LotesPo = lotesPoList 
+                                   });
+                               }
+                              
+                               catch (Exception ex)
+                               {
+                                   await transaction.RollbackAsync();
+                                   return StatusCode(500, new 
+                                   { 
+                                       isSuccess = false, 
+                                       status = 500, 
+                                       message = "Ocurrió un error inesperado.", 
+                                       error = ex.Message,
+                                       innerError = ex.InnerException?.Message
+                                   });
+                               }
+                           }
+                       }
+
+
    } 
     
 }
