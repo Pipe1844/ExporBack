@@ -158,6 +158,45 @@ public async Task<IActionResult> Update([FromBody] DepUsuarioRequest request)
         return StatusCode(500, new { isSuccess = false, status = 500, message = "Ocurrió un error inesperado.", error = ex.Message });  
     }  
 }
+
+        // GET: api/v2/depusuarios/{usuario}
+// Obtiene los departamentos asociados a un usuario
+        [HttpGet("{usuario}")]
+        public async Task<IActionResult> GetDepartamentosByUsuario(string usuario)
+        {
+            try
+            {
+                // Verificar que el usuario exista en la base de datos
+                var usuarioExiste = await _appDbContext.UsuarioTbs
+                    .AnyAsync(u => u.Usuario == usuario);
+
+                if (!usuarioExiste)
+                {
+                    return NotFound(new { isSuccess = false, status = 404, message = "Usuario no encontrado." });
+                }
+
+                // Obtener los departamentos asociados al usuario
+                var departamentos = await _appDbContext.DepUsuarioTBs
+                    .Where(du => du.Usuario == usuario)
+                    .Select(du => new
+                    {
+                        du.Departamento // Asegúrate de que este campo sea el correcto
+                    })
+                    .ToListAsync();
+
+                if (!departamentos.Any())
+                {
+                    return Ok(new { isSuccess = true, status = 204, message = "El usuario no tiene departamentos asignados.", departamentos = new List<object>() });
+                }
+
+                return Ok(new { isSuccess = true, status = 200, departamentos });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error al obtener los departamentos.", error = ex.Message });
+            }
+        }
+
     }
     
     
