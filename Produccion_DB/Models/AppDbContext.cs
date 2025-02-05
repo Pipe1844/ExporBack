@@ -9,10 +9,13 @@ public partial class AppDbContext : DbContext
     public AppDbContext()
     {
     }
+    
+    
 
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
-    {
+    { 
+       // this.ChangeTracker.LazyLoadingEnabled = false;
     }
 
     public virtual DbSet<ApruebaProductoTb> ApruebaProductoTbs { get; set; }

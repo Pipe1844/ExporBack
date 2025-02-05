@@ -23,7 +23,23 @@ namespace Produccion_DB.Controllers
                    try
                    {
                        // Intentamos obtener la lista de lotesPO
-                       var lotePo = await this.appDbContext.LotesPoTbs.ToListAsync();
+                       var lotePo = await this.appDbContext.LotesPoTbs.
+                           Select(l=>new
+                           {
+                               l.Temporada,
+                               l.SiembraNum,
+                               l.NombreLote,
+                               l.AliasLote,
+                               l.FechaTrasplante,
+                               l.Area,
+                               l.Orientacion,
+                               l.Fumig,
+                               l.TipoPlastico,
+                               l.Densidad,
+                               l.ColmenasPorHa,
+                               l.ProgFertilizacion,
+                               l.ProgFitoProteccion
+                           }).ToListAsync();
        
                        // Verificamos si la lista está vacía
                        if (lotePo == null || !lotePo.Any())
@@ -121,9 +137,25 @@ namespace Produccion_DB.Controllers
                        {
                            try
                            {
-                               var lotesPo = await this.appDbContext.LotesPoTbs
-                                   .Where(lPo => lPo.Temporada == temporada)
-                                   .ToListAsync();
+                               var lotesPo = await this.appDbContext.LotesPoTbs.
+                                   Where(lPo => lPo.Temporada == temporada).
+                                   Select(l=>new
+                                   {
+                                       l.Temporada,
+                                       l.SiembraNum,
+                                       l.NombreLote,
+                                       l.AliasLote,
+                                       l.FechaTrasplante,
+                                       l.Area,
+                                       l.Orientacion,
+                                       l.Fumig,
+                                       l.TipoPlastico,
+                                       l.Densidad,
+                                       l.ColmenasPorHa,
+                                       l.ProgFertilizacion,
+                                       l.ProgFitoProteccion
+                                   })
+                                  .ToListAsync();
 
                                if (!lotesPo.Any()) 
                                {
