@@ -89,8 +89,28 @@ namespace Produccion_DB.Controllers
                            {
                                
                                var lotePo = await this.appDbContext.LotesPoTbs
-                                   .FirstOrDefaultAsync(lPo => lPo.Temporada == temporada && lPo.SiembraNum == siembraNum && 
-                                                               lPo.NombreLote==nombreLote && lPo.AliasLote==aliasLote);
+                                   .Select(l => new
+                                   {
+                                       l.Temporada,
+                                       l.SiembraNum,
+                                       l.NombreLote,
+                                       l.AliasLote,
+                                       l.FechaTrasplante,
+                                       l.Area,
+                                       l.Orientacion,
+                                       l.Fumig,
+                                       l.TipoPlastico,
+                                       l.Densidad,
+                                       l.ColmenasPorHa,
+                                       l.ProgFertilizacion,
+                                       l.ProgFitoProteccion
+                                   })
+                                   .FirstOrDefaultAsync(lPo => lPo.Temporada == temporada &&
+                                                               lPo.SiembraNum == siembraNum &&
+                                                               lPo.NombreLote == nombreLote &&
+                                                               lPo.AliasLote == aliasLote);
+
+
                        
                                if (lotePo == null)
                                {
