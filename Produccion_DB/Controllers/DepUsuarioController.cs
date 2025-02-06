@@ -204,7 +204,8 @@ public async Task<IActionResult> Update([FromBody] DepUsuarioRequest request)
     // Modelo auxiliar para las solicitudes
     public class DepUsuarioRequest
     {
-        public string Usuario { get; set; }
-        public List<string> Departamentos { get; set; }
+        public string? Usuario { get; set; } // Ahora acepta null  
+
+        public List<string>? Departamentos { get; set; } // Ahora acepta null  
     }
 }

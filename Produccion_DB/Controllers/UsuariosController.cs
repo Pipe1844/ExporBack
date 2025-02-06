@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Produccion_DB.Models;
-using Produccion_DB.Models.AuxiliarModels;
+
 
 namespace Produccion_DB.Controllers
 {
@@ -21,26 +21,57 @@ namespace Produccion_DB.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            try
-            {
-                var usuarios = await _appDbContext.UsuarioTbs.ToListAsync();
+            try  
+    {  
+        var usuarios = await this._appDbContext.UsuarioTbs  
+            .Select(u => new  
+            {  
+                u.Usuario,  
+                u.RolDeUsuario,  
+                u.IdEmpleado,  
+                u.Contrasena,
+                u.FechaCreacion  
+            })  
+            .ToListAsync();  
 
-                if (usuarios == null || !usuarios.Any())
-                {
-                    return Ok(new { isSuccess = true, status = 204, Usuarios = new List<Object>() });
-                }
+        if (usuarios == null || !usuarios.Any())  
+        {  
+            return Ok(new   
+            {   
+                isSuccess = true,   
+                status = 204,   
+                Usuarios = new List<Object>()   
+            });  
+        }  
 
-                return Ok(new { isSuccess = true, status = 200, usuarios });
-            }
-            catch (DbUpdateException dbEx)
-            {
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error al acceder a la base de datos.", error = dbEx.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Ocurrió un error inesperado.", error = ex.Message });
-            }
-        }
+        return Ok(new   
+        {   
+            isSuccess = true,   
+            status = 200,   
+            Usuarios = usuarios   
+        });  
+    }  
+    catch (DbUpdateException dbEx)  
+    {  
+        return StatusCode(500, new   
+        {   
+            isSuccess = false,   
+            status = 500,   
+            message = "Ocurrió un error al acceder a la base de datos.",   
+            error = dbEx.Message   
+        });  
+    }  
+    catch (Exception ex)  
+    {  
+        return StatusCode(500, new   
+        {   
+            isSuccess = false,   
+            status = 500,   
+            message = "Ocurrió un error inesperado.",   
+            error = ex.Message   
+        });  
+    }  
+}  
 
         // GET: api/v2/usuarios/{id}
         [HttpGet("{id}")]

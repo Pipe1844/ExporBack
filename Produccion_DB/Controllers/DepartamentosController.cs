@@ -19,51 +19,55 @@ namespace Produccion_DB.Controllers
        [HttpGet]
                public async Task<IActionResult> Index()
                {
-                   try
-                   {
-                       // Intentamos obtener la lista de departamentos
-                       var departamentos = await this.appDbContext.DepartamentoTbs.ToListAsync();
-       
-                       // Verificamos si la lista está vacía
-                       if (departamentos == null || !departamentos.Any())
-                       {
-                           return Ok(new 
-                           { 
-                               isSuccess = true, 
-                               status = 204, 
-                               Departamentos = new List<Object>()
-                           });
-                       }
-                       return Ok(new 
-                       { 
-                           isSuccess = true, 
-                           status = 200, 
-                           Departamentos = departamentos 
-                       });
-                   }
-                   catch (DbUpdateException dbEx)
-                   {
-                       // Manejo específico de errores relacionados con la base de datos
-                       return StatusCode(500, new 
-                       { 
-                           isSuccess = false, 
-                           status = 500, 
-                           message = "Ocurrió un error al acceder a la base de datos.", 
-                           error = dbEx.Message 
-                       });
-                   }
-                   catch (Exception ex)
-                   {
-                       // Manejo de errores generales
-                       return StatusCode(500, new 
-                       { 
-                           isSuccess = false, 
-                           status = 500, 
-                           message = "Ocurrió un error inesperado.", 
-                           error = ex.Message 
-                       });
-                   }
-               }
+                   try  
+                   {  
+                       var departamentos = await this.appDbContext.DepartamentoTbs  
+                           .Select(d => new  
+                           {  
+                               d.Departamento,  
+                               d.Encargado,  
+                               d.Descripcion  
+                           })  
+                           .ToListAsync();  
+
+                       if (departamentos == null || !departamentos.Any())  
+                       {  
+                           return Ok(new   
+                           {   
+                               isSuccess = true,   
+                               status = 204,   
+                               Departamentos = new List<Object>()   
+                           });  
+                       }  
+
+                       return Ok(new   
+                       {   
+                           isSuccess = true,   
+                           status = 200,   
+                           Departamentos = departamentos   
+                       });  
+                   }  
+                   catch (DbUpdateException dbEx)  
+                   {  
+                       return StatusCode(500, new   
+                       {   
+                           isSuccess = false,   
+                           status = 500,   
+                           message = "Ocurrió un error al acceder a la base de datos.",   
+                           error = dbEx.Message   
+                       });  
+                   }  
+                   catch (Exception ex)  
+                   {  
+                       return StatusCode(500, new   
+                       {   
+                           isSuccess = false,   
+                           status = 500,   
+                           message = "Ocurrió un error inesperado.",   
+                           error = ex.Message   
+                       });  
+                   }  
+               }  
                
                [HttpGet("{id}")]
                        public async Task<IActionResult> Show(string id)

@@ -23,21 +23,54 @@ namespace Produccion_DB.Controllers
             try  
             {  
                 var certificaciones = await _appDbContext.CertificacionesTbs  
-                                                         .Where(c => c.IdProducto == idProducto)  
-                                                         .ToListAsync();  
+                    .Where(c => c.IdProducto == idProducto)  
+                    .Select(c => new  
+                    {  
+                        c.IdProducto,  
+                        c.NombreCertificacion,  
+                        c.DdtPrecosecha,  
+                        c.Comentarios  
+                    })  
+                    .ToListAsync();  
 
                 if (certificaciones == null || !certificaciones.Any())  
                 {  
-                    return Ok(new { isSuccess = true, status = 204, Certificaciones = new List<Object>() });  
+                    return Ok(new   
+                    {   
+                        isSuccess = true,   
+                        status = 204,   
+                        Certificaciones = new List<Object>()   
+                    });  
                 }  
 
-                return Ok(new { isSuccess = true, status = 200, Certificaciones = certificaciones });  
+                return Ok(new   
+                {   
+                    isSuccess = true,   
+                    status = 200,   
+                    Certificaciones = certificaciones   
+                });  
+            }  
+            catch (DbUpdateException dbEx)  
+            {  
+                return StatusCode(500, new   
+                {   
+                    isSuccess = false,   
+                    status = 500,   
+                    message = "Ocurrió un error al acceder a la base de datos.",   
+                    error = dbEx.Message   
+                });  
             }  
             catch (Exception ex)  
             {  
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error interno del servidor.", error = ex.Message });  
+                return StatusCode(500, new   
+                {   
+                    isSuccess = false,   
+                    status = 500,   
+                    message = "Ocurrió un error inesperado.",   
+                    error = ex.Message   
+                });  
             }  
-        }  
+        }
 
         // POST: api/v2/certificaciones  
         [HttpPost]  
@@ -137,10 +170,10 @@ namespace Produccion_DB.Controllers
     }  
     public class CertificacionRequest  
     {  
-        public string IdProducto { get; set; }  // Propiedad requerida  
-        public string NombreCertificacion { get; set; }  // Propiedad requerida  
-        public int DdtPrecosecha { get; set; }  // Propiedad requerida  
-        public string Comentarios { get; set; }  
+        public required string IdProducto { get; set; }  
+        public required string NombreCertificacion { get; set; }  
+        public required int DdtPrecosecha { get; set; } // Puedes cambiar esto a un valor por defecto si es apropiado  
+        public required string Comentarios { get; set; } 
 
     }
 }
