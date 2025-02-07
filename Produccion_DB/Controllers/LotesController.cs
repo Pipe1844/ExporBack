@@ -64,6 +64,57 @@ namespace Produccion_DB.Controllers
                    }
                }
                
+               
+       [HttpGet("activos")]
+       public async Task<IActionResult> lotesActivos()
+       {
+           try
+           {
+               // Intentamos obtener la lista de temporadas
+               var lotesActivos = await this.appDbContext.LotesFisicosTbs.
+                   Where(l=>l.Activo==true).ToListAsync();
+       
+               // Verificamos si la lista está vacía
+               if (lotesActivos == null || !lotesActivos.Any())
+               {
+                   return Ok(new 
+                   { 
+                       isSuccess = true, 
+                       status = 204, 
+                       LotesActivos = new List<Object>() 
+                   });
+               }
+               return Ok(new 
+               { 
+                   isSuccess = true, 
+                   status = 200, 
+                   LotesActivos = lotesActivos 
+               });
+           }
+           catch (DbUpdateException dbEx)
+           {
+               // Manejo específico de errores relacionados con la base de datos
+               return StatusCode(500, new 
+               { 
+                   isSuccess = false, 
+                   status = 500, 
+                   message = "Ocurrió un error al acceder a la base de datos.", 
+                   error = dbEx.Message 
+               });
+           }
+           catch (Exception ex)
+           {
+               // Manejo de errores generales
+               return StatusCode(500, new 
+               { 
+                   isSuccess = false, 
+                   status = 500, 
+                   message = "Ocurrió un error inesperado.", 
+                   error = ex.Message 
+               });
+           }
+       }
+               
                [HttpGet("{id}")]
                        public async Task<IActionResult> Show(string id)
                        {

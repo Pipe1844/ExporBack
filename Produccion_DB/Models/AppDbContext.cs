@@ -9,10 +9,13 @@ public partial class AppDbContext : DbContext
     public AppDbContext()
     {
     }
+    
+    
 
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
-    {
+    { 
+       // this.ChangeTracker.LazyLoadingEnabled = false;
     }
 
     public virtual DbSet<ApruebaProductoTb> ApruebaProductoTbs { get; set; }
@@ -2067,7 +2070,7 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("Tipo_Plastico");
 
-            entity.HasOne(d => d.NombreLoteNavigation).WithMany(p => p.LotesPoTbs)
+           /* entity.HasOne(d => d.NombreLoteNavigation).WithMany(p => p.LotesPoTbs)
                 .HasForeignKey(d => d.NombreLote)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("RefLotes_Fisicos_TB14");
@@ -2076,6 +2079,7 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(d => d.Temporada)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("RefTemporada_TB25");
+                */
         });
 
         modelBuilder.Entity<LvTermporadaTb>(entity =>
