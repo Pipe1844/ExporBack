@@ -65,6 +65,53 @@ namespace Produccion_DB.Controllers
             }
         }
         
+        [HttpGet("fechas")]
+        public async Task<IActionResult> Temporadas()
+        {
+            try
+            {
+                var temporadas = await this.appDbContext.TemporadaTbs.Select(t=>new{t.Temporada}).ToListAsync();
+
+                // Verificamos si la lista está vacía
+                if (temporadas == null || !temporadas.Any())
+                {
+                    return Ok(new 
+                    { 
+                        isSuccess = true, 
+                        status = 204, 
+                        Temporadas = new List<Object>() 
+                    });
+                }
+                return Ok(new 
+                { 
+                    isSuccess = true, 
+                    status = 200, 
+                    Temporadas = temporadas 
+                });
+            }
+            catch (DbUpdateException dbEx)
+            {
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message 
+                });
+            }
+            catch (Exception ex)
+            {
+                // Manejo de errores generales
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
+            }
+        }
+        
         [HttpGet("activa")]
         public async Task<IActionResult> TemporadaActual()
         {
