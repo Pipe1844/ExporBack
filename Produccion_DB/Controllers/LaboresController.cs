@@ -21,7 +21,12 @@ namespace Produccion_DB.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var labores = await this.appDbContext.LaboresTbs.ToListAsync();
+            var labores = await this.appDbContext.LaboresTbs.Select(l => new
+            {
+                l.Labor,
+                l.Departamento,
+                l.Descripcion
+            }).ToListAsync();
 
             if (labores == null || !labores.Any())
             {
@@ -32,10 +37,10 @@ namespace Produccion_DB.Controllers
         }
 
         // GET api/<LaboresController>/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Show(string id)
+        [HttpGet("{id}/{departamento}")]
+        public async Task<IActionResult> Show(string id, string departamento)
         {
-            var labor = await this.appDbContext.ArticulosTbs.FindAsync(id);
+            var labor = await this.appDbContext.ArticulosTbs.FindAsync(id, departamento);
 
             if (labor == null)
             {
@@ -64,20 +69,17 @@ namespace Produccion_DB.Controllers
         }
 
         // PUT api/<LaboresController>/5
-        [HttpPut("{oldLabor}/{departamento}")]
-        public async Task<IActionResult> Update(string oldLabor, string departamento, [FromBody] LaboresTb newLabor)
+        [HttpPut("{id}/{departamento}/{descripcion}")]
+        public async Task<IActionResult> Update(string id, string departamento, string descripcion)
         {
-            var labor = await this.appDbContext.LaboresTbs.FindAsync(oldLabor, departamento);
+            var labor = await this.appDbContext.LaboresTbs.FindAsync(id, departamento);
 
             if (labor == null)
             {
                 return NotFound(new { isSuccess = false, status = 404, message = "Labor no encontrado." });
             }
-
-
-            labor.Labor = newLabor.Labor;
-            labor.Departamento = newLabor.Departamento;
-            labor.Descripcion = newLabor.Descripcion;
+            
+            labor.Descripcion = descripcion;
 
             await this.appDbContext.SaveChangesAsync();
 
