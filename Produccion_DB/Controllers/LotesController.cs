@@ -72,7 +72,9 @@ namespace Produccion_DB.Controllers
            {
                // Intentamos obtener la lista de temporadas
                var lotesActivos = await this.appDbContext.LotesFisicosTbs.
-                   Where(l=>l.Activo==true).ToListAsync();
+                   Where(l=>l.Activo==true)
+                   .Select(lo => new { lo.NombreLote, lo.Area }).
+                   ToListAsync();
        
                // Verificamos si la lista está vacía
                if (lotesActivos == null || !lotesActivos.Any())

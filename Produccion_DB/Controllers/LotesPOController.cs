@@ -177,13 +177,13 @@ namespace Produccion_DB.Controllers
                                    })
                                   .ToListAsync();
 
-                               if (!lotesPo.Any()) 
+                               if (lotesPo.Count == 0) 
                                {
-                                   return NotFound(new
+                                   return Ok(new 
                                    { 
-                                       isSuccess = false, 
-                                       status = 404, 
-                                       message = "No se encontraron lotes para la temporada proporcionada."
+                                       isSuccess = true, 
+                                       status = 204, 
+                                       LotesPO = new List<object>() 
                                    });
                                }
 
