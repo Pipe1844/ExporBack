@@ -74,13 +74,13 @@ namespace Produccion_DB.Controllers
             }
         }
 
-        [HttpGet("{departamento}/{labor}")]
-         public async Task<IActionResult> Show(string departamento, string labor)
+        [HttpGet("{temporada}/{departamento}/{labor}")]
+         public async Task<IActionResult> Show(string temporada,string departamento, string labor)
             {
                 try
                  {
                      var laboresTemporada = await appDbContext.LaborTTbs
-                         .Where(l => l.Departamento == departamento && l.Labor == labor)
+                         .Where(l =>l.Temporada == temporada && l.Departamento == departamento && l.Labor == labor)
                          .Select(l => new
                          {
                              l.Temporada,
@@ -178,12 +178,12 @@ namespace Produccion_DB.Controllers
             }
         }
 
-        [HttpPut("{departamento}/{labor}")]
-        public async Task<IActionResult> Update(string departamento, string labor,
+        [HttpPut("{temporada}/{departamento}/{labor}")]
+        public async Task<IActionResult> Update(string temporada,string departamento, string labor,
             [FromBody] LaborTTb laboresTemporada)
         {
             var laborT = await this.appDbContext.LaborTTbs
-                .FirstOrDefaultAsync(llabor => llabor.Departamento == departamento && llabor.Labor == labor);
+                .FirstOrDefaultAsync(llabor => llabor.Temporada == temporada && llabor.Departamento == departamento && llabor.Labor == labor);
             
             if (laborT == null)
             {
@@ -205,11 +205,11 @@ namespace Produccion_DB.Controllers
             });
         }
 
-        [HttpDelete("{depatamento}/{labor}")]
-        public async Task<IActionResult> Destroy(string depatamento, string labor)
+        [HttpDelete("{temporada}/{depatamento}/{labor}")]
+        public async Task<IActionResult> Destroy(string temporada, string depatamento, string labor)
         {
             var laborT = await this.appDbContext.LaborTTbs
-                .FirstOrDefaultAsync(lT => lT.Departamento == depatamento && lT.Labor == labor);
+                .FirstOrDefaultAsync(lT =>lT.Temporada == temporada && lT.Departamento == depatamento && lT.Labor == labor);
             
             if (laborT == null)
             {
