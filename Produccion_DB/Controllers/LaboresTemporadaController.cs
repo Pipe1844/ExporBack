@@ -79,7 +79,7 @@ namespace Produccion_DB.Controllers
          public async Task<IActionResult> Show(string temporada,string departamento, string labor)
             {
                 try
-                 {
+                {
                      var laboresTemporada = await appDbContext.LaborTTbs
                          .Where(l =>l.Temporada == temporada && l.Departamento == departamento && l.Labor == labor)
                          .Select(l => new
@@ -103,13 +103,13 @@ namespace Produccion_DB.Controllers
                          message = "labores no enontradas." 
                      });
                     }
-                     return Ok(new 
+                    return Ok(new 
                     { 
                      isSuccess = true, 
                      status = 200, 
                      LaboresTemporada = laboresTemporada 
                     }); 
-                 }
+                }
                 catch (DbUpdateException dbEx)
                 { 
                     return StatusCode(500, new 
