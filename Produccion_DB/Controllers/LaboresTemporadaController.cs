@@ -35,7 +35,7 @@ namespace Produccion_DB.Controllers
 
                 }).ToListAsync();
 
-                if (laboresTemporada == null || !laboresTemporada.Any())
+                if (laboresTemporada == null || laboresTemporada.Count == 0)
                 {
                     return Ok(new 
                     { 
