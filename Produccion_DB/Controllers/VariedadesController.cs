@@ -22,16 +22,24 @@ namespace Produccion_DB.Controllers
             try
             {
                 // Intentamos obtener la lista de temporadas
-                var variedades = await this.appDbContext.VariedadTbs.ToListAsync();
+                var variedades = await this.appDbContext.VariedadTbs.
+                    Select(v=>new
+                    {
+                        v.Variedad,
+                        v.Cultivo,
+                        v.NombreAbreviatura,
+                        v.Descripcion
+                    })
+                    .ToListAsync();
 
                 // Verificamos si la lista está vacía
-                if (variedades == null || !variedades.Any())
+                if (variedades.Count==0)
                 {
                     return Ok(new 
                     { 
                         isSuccess = true, 
                         status = 204, 
-                        Variedades = new List<Object>() 
+                        Variedades = new List<object>() 
                     });
                 }
                 return Ok(new 
@@ -42,19 +50,19 @@ namespace Produccion_DB.Controllers
                 });
             }
             catch (DbUpdateException dbEx)
-            {
-                // Manejo específico de errores relacionados con la base de datos
+            { 
                 return StatusCode(500, new 
                 { 
                     isSuccess = false, 
                     status = 500, 
                     message = "Ocurrió un error al acceder a la base de datos.", 
-                    error = dbEx.Message 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
                 });
             }
+            // Manejo de errores generales
             catch (Exception ex)
             {
-                // Manejo de errores generales
                 return StatusCode(500, new 
                 { 
                     isSuccess = false, 
@@ -65,14 +73,21 @@ namespace Produccion_DB.Controllers
             }
         }
         
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Show(string id)
+        [HttpGet("{cultivo}/{variedad}")]
+        public async Task<IActionResult> Show(string cultivo, string variedad)
         {
             try
             {
-                var variedad = await this.appDbContext.VariedadTbs.FindAsync(id);
+                var variedadBuscar = await this.appDbContext.VariedadTbs.
+                    Select(v=>new
+                    {
+                        v.Variedad,
+                        v.Cultivo,
+                        v.NombreAbreviatura,
+                        v.Descripcion
+                    }).FirstOrDefaultAsync(va=>va.Variedad==variedad && va.Cultivo==cultivo);
         
-                if (variedad == null)
+                if (variedadBuscar == null)
                 {
                     return NotFound(new 
                     { 
@@ -86,19 +101,21 @@ namespace Produccion_DB.Controllers
                 { 
                     isSuccess = true, 
                     status = 200, 
-                    Variedad = variedad 
+                    Variedad = variedadBuscar 
                 });
             }
             catch (DbUpdateException dbEx)
-            {
+            { 
                 return StatusCode(500, new 
                 { 
                     isSuccess = false, 
                     status = 500, 
-                    message = "Error al acceder a la base de datos.", 
-                    error = dbEx.Message 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
                 });
             }
+            // Manejo de errores generales
             catch (Exception ex)
             {
                 return StatusCode(500, new 
@@ -114,16 +131,6 @@ namespace Produccion_DB.Controllers
         [HttpPost]
         public async Task<IActionResult> Store([FromBody] VariedadTb variedad)
         {
-            if (variedad == null)
-            {
-                return BadRequest(new 
-                { 
-                    isSuccess = false, 
-                    status = 400, 
-                    message = "Datos inválidos." 
-                });
-            }
-
             try
             {
                 await this.appDbContext.VariedadTbs.AddAsync(variedad);
@@ -138,15 +145,17 @@ namespace Produccion_DB.Controllers
                 });
             }
             catch (DbUpdateException dbEx)
-            {
+            { 
                 return StatusCode(500, new 
                 { 
                     isSuccess = false, 
                     status = 500, 
-                    message = "Error al guardar en la base de datos.", 
-                    error = dbEx.Message 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
                 });
             }
+            // Manejo de errores generales
             catch (Exception ex)
             {
                 return StatusCode(500, new 
@@ -162,43 +171,93 @@ namespace Produccion_DB.Controllers
         [HttpPut("{cultivo}/{variedad}")]
         public async Task<IActionResult> Update(string cultivo, string variedad, [FromBody] VariedadTb variedades)
         {
-            var variedadModific = await this.appDbContext.VariedadTbs
-                .FirstOrDefaultAsync(v => v.Cultivo == cultivo && v.Variedad == variedad);
-            
-            if (variedadModific == null)
+            try
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "Variedad no encontrada." });
-            }
+                var variedadModific = await this.appDbContext.VariedadTbs
+                    .FirstOrDefaultAsync(v => v.Cultivo == cultivo && v.Variedad == variedad);
 
-            variedadModific.Cultivo = variedades.Cultivo;
-            variedadModific.Variedad = variedades.Variedad;
-            variedadModific.NombreAbreviatura = variedades.NombreAbreviatura;
-            variedadModific.Descripcion = variedades.Descripcion;
-            
-           
-            
-            await this.appDbContext.SaveChangesAsync();
-            return Ok(new
+                if (variedadModific == null)
+                {
+                    return NotFound(new { isSuccess = false, status = 404, message = "Variedad no encontrada." });
+                }
+
+                variedadModific.Cultivo = variedades.Cultivo;
+                variedadModific.Variedad = variedades.Variedad;
+                variedadModific.NombreAbreviatura = variedades.NombreAbreviatura;
+                variedadModific.Descripcion = variedades.Descripcion;
+
+
+
+                await this.appDbContext.SaveChangesAsync();
+                return Ok(new
+                {
+                    isSuccess = true, status = 200, message = "Variedad actualizada exitosamente.", variedadModific
+                });
+            }
+            catch (DbUpdateException dbEx)
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
+            }
+            // Manejo de errores generales
+            catch (Exception ex)
             {
-                isSuccess = true, status = 200, message = "Variedad actualizada exitosamente.", variedadModific = variedadModific
-            });
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
+            }
         }
         
         [HttpDelete("{cultivo}/{variedad}")]
         public async Task<IActionResult> Destroy(string cultivo, string variedad)
         {
-            var variedade = await this.appDbContext.VariedadTbs
-                .FirstOrDefaultAsync(v => v.Cultivo == cultivo && v.Variedad == variedad);
-            
-            if (variedade == null)
+            try
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "variedad no encontrada." });
+                var variedaDel = await this.appDbContext.VariedadTbs
+                    .FirstOrDefaultAsync(v => v.Cultivo == cultivo && v.Variedad == variedad);
+
+                if (variedaDel == null)
+                {
+                    return NotFound(new { isSuccess = false, status = 404, message = "variedad no encontrada." });
+                }
+
+                this.appDbContext.VariedadTbs.Remove(variedaDel);
+                await this.appDbContext.SaveChangesAsync();
+
+                return Ok(new { isSuccess = true, status = 200, message = "variedad eliminada exitosamente." });
             }
-            
-            this.appDbContext.VariedadTbs.Remove(variedade);
-            await this.appDbContext.SaveChangesAsync();
-            
-            return Ok(new { isSuccess = true, status = 200, message = "variedad eliminada exitosamente." });
+            catch (DbUpdateException dbEx)
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
+            }
+            // Manejo de errores generales
+            catch (Exception ex)
+            {
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
+            }
         }
     }
 }

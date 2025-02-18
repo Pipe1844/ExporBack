@@ -21,56 +21,58 @@ namespace Produccion_DB.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            try  
-    {  
-        var usuarios = await this._appDbContext.UsuarioTbs  
-            .Select(u => new  
+            try 
             {  
-                u.Usuario,  
-                u.RolDeUsuario,  
-                u.IdEmpleado,  
-                u.Contrasena,
-                u.FechaCreacion  
-            })  
-            .ToListAsync();  
+                var usuarios = await this._appDbContext.UsuarioTbs  
+                    .Select(u => new  
+                    {  
+                        u.Usuario,  
+                        u.RolDeUsuario,  
+                        u.IdEmpleado,  
+                        u.Contrasena,
+                        u.FechaCreacion  
+                    })  
+                    .ToListAsync();  
 
-        if (usuarios == null || !usuarios.Any())  
-        {  
-            return Ok(new   
-            {   
-                isSuccess = true,   
-                status = 204,   
-                Usuarios = new List<Object>()   
-            });  
-        }  
+                if (usuarios.Count==0)  
+                {  
+                    return Ok(new   
+                    {   
+                        isSuccess = true,   
+                        status = 204,   
+                        Usuarios = new List<object>()   
+                    });  
+                }  
 
-        return Ok(new   
-        {   
-            isSuccess = true,   
-            status = 200,   
-            Usuarios = usuarios   
-        });  
-    }  
-    catch (DbUpdateException dbEx)  
-    {  
-        return StatusCode(500, new   
-        {   
-            isSuccess = false,   
-            status = 500,   
-            message = "Ocurrió un error al acceder a la base de datos.",   
-            error = dbEx.Message   
-        });  
-    }  
-    catch (Exception ex)  
-    {  
-        return StatusCode(500, new   
-        {   
-            isSuccess = false,   
-            status = 500,   
-            message = "Ocurrió un error inesperado.",   
-            error = ex.Message   
-        });  
-    }  
+                return Ok(new   
+                {   
+                    isSuccess = true,   
+                    status = 200,   
+                    Usuarios = usuarios   
+                });  
+            }  
+            catch (DbUpdateException dbEx)
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
+            }
+            // Manejo de errores generales
+            catch (Exception ex)
+            {
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
+            }
 }  
 
         // GET: api/v2/usuarios/{id}
@@ -89,12 +91,26 @@ namespace Produccion_DB.Controllers
                 return Ok(new { isSuccess = true, status = 200, usuario });
             }
             catch (DbUpdateException dbEx)
-            {
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error al acceder a la base de datos.", error = dbEx.Message });
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
             }
+            // Manejo de errores generales
             catch (Exception ex)
             {
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Ocurrió un error inesperado.", error = ex.Message });
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
             }
         }
         
@@ -102,17 +118,6 @@ namespace Produccion_DB.Controllers
         [HttpPost]
         public async Task<IActionResult> Store([FromBody]  UsuarioTb usuario)
         {
-            if (usuario == null)
-            {
-                return BadRequest(new { isSuccess = false, status = 400, message = "Datos de usuario inválidos." });
-            }
-            // Verificar campos requeridos
-            if (string.IsNullOrEmpty(usuario.Usuario) ||
-                string.IsNullOrEmpty(usuario.RolDeUsuario) ||
-                string.IsNullOrEmpty(usuario.IdEmpleado))
-            {
-                return BadRequest(new { isSuccess = false, status = 400, message = "Faltan campos requeridos." });
-            }
 
             // Verificar si el ID_Empleado ya existe
             var existeEmpleado = await _appDbContext.UsuarioTbs
@@ -165,12 +170,26 @@ namespace Produccion_DB.Controllers
                 return Ok(new { isSuccess = true, status = 200, message = "Usuario actualizado exitosamente.", usuario });
             }
             catch (DbUpdateException dbEx)
-            {
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error al actualizar en la base de datos.", error = dbEx.Message });
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
             }
+            // Manejo de errores generales
             catch (Exception ex)
             {
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Ocurrió un error inesperado.", error = ex.Message });
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
             }
         }
 
@@ -193,12 +212,26 @@ namespace Produccion_DB.Controllers
                 return Ok(new { isSuccess = true, status = 200, message = "Usuario eliminado exitosamente." });
             }
             catch (DbUpdateException dbEx)
-            {
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error al eliminar en la base de datos.", error = dbEx.Message });
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
             }
+            // Manejo de errores generales
             catch (Exception ex)
             {
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Ocurrió un error inesperado.", error = ex.Message });
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
             }
         }
     }

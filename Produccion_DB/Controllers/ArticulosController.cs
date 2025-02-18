@@ -20,89 +20,235 @@ namespace Produccion_DB.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var articulos = await this.appDbContext.ArticulosTbs.ToListAsync();
-
-            if (articulos == null || !articulos.Any())
+            try
             {
-                return Ok(new { isSuccess = true, status = 204, articulos = new List<Object>() });
-            }
+                var articles = await this.appDbContext.ArticulosTbs.Select(a => new
+                    {
+                        a.IdArticulo,
+                        a.NombreArticulo,
+                        a.Tipo,
+                        a.Marca,
+                        a.Modelo,
+                        a.Color,
+                        a.Placa,
+                        a.NumeroChasis,
+                        a.NumeroMotor,
+                        a.Observaciones
+                    })
+                    .ToListAsync();
 
-            return Ok(new { isSuccess = true, status = 200, articulos = articulos });
+                return articles.Count == 0
+                    ? Ok(new { isSuccess = true, status = 204, articulos = new List<object>() })
+                    : Ok(new { isSuccess = true, status = 200, articulos = articles });
+            }
+            // Manejo específico de errores relacionados con la base de datos
+            catch (DbUpdateException dbEx)
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
+            }
+            // Manejo de errores generales
+            catch (Exception ex)
+            {
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
+            }
         }
         
         [HttpGet("{id}")]
         public async Task<IActionResult> Show(string id)
         {
-            var articulo = await this.appDbContext.ArticulosTbs.FindAsync(id);
-            
-            if (articulo == null)
+            try
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "Articulo no encontrado." });
+
+                var articles = await this.appDbContext.ArticulosTbs.Select(a => new
+                    {
+                        a.IdArticulo,
+                        a.NombreArticulo,
+                        a.Tipo,
+                        a.Marca,
+                        a.Modelo,
+                        a.Color,
+                        a.Placa,
+                        a.NumeroChasis,
+                        a.NumeroMotor,
+                        a.Observaciones
+                    })
+                    .FirstOrDefaultAsync(ar => ar.IdArticulo == id);
+
+                if (articles == null)
+                {
+                    return NotFound(new { isSuccess = false, status = 404, message = "Articulo no encontrado." });
+                }
+
+                return Ok(new { isSuccess = true, status = 200, articulo = articles });
+            }   // Manejo específico de errores relacionados con la base de datos
+            catch (DbUpdateException dbEx)
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
             }
-            
-            return Ok(new { isSuccess = true, status = 200, producto = articulo });
+            // Manejo de errores generales
+            catch (Exception ex)
+            {
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
+            }
         }
         
         [HttpPost]
-        public async Task<IActionResult> Store([FromBody] ArticulosTb articulo)
+        public async Task<IActionResult> Store([FromBody] ArticulosTb article)
         {
-            if (articulo == null)
+            try
             {
-                return BadRequest(new { isSuccess = false, status = 400, message = "Datos de articulo inválidos." });
+                await this.appDbContext.ArticulosTbs.AddAsync(article);
+                await this.appDbContext.SaveChangesAsync();
+                
+                return Ok(new
+                {
+                    isSuccess = true, status = 201, message = "Articulo creado exitosamente.", articulo = article
+                });
             }
-            
-            await this.appDbContext.ArticulosTbs.AddAsync(articulo);
-            await this.appDbContext.SaveChangesAsync();
-            
-            return Ok(new
+            // Manejo específico de errores relacionados con la base de datos
+            catch (DbUpdateException dbEx)
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
+            }
+            // Manejo de errores generales
+            catch (Exception ex)
             {
-                isSuccess = true, status = 201, message = "Articulo creado exitosamente.", articulo = articulo
-            });
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
+            }
         }
         
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, [FromBody] ArticulosTb articulo)
         {
-            var producto = await this.appDbContext.ArticulosTbs.FindAsync(id);
-            
-            if (producto == null)
+            try
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "Articulo no encontrado." });
+                var producto = await this.appDbContext.ArticulosTbs.FindAsync(id);
+
+                if (producto == null)
+                {
+                    return NotFound(new { isSuccess = false, status = 404, message = "Articulo no encontrado." });
+                }
+
+
+                producto.NombreArticulo = articulo.NombreArticulo;
+                producto.Tipo = articulo.Tipo;
+                producto.Marca = articulo.Marca;
+                producto.Modelo = articulo.Modelo;
+                producto.Color = articulo.Color;
+                producto.Placa = articulo.Placa;
+                producto.NumeroChasis = articulo.NumeroChasis;
+                producto.NumeroMotor = articulo.NumeroMotor;
+                producto.Observaciones = articulo.Observaciones;
+
+                await this.appDbContext.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    isSuccess = true, status = 200, message = "Articulo actualizado exitosamente.", producto = producto
+                });
+            }   // Manejo específico de errores relacionados con la base de datos
+            catch (DbUpdateException dbEx)
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
             }
-            
-            
-            producto.NombreArticulo = articulo.NombreArticulo;
-            producto.Tipo = articulo.Tipo;
-            producto.Marca = articulo.Marca;
-            producto.Modelo = articulo.Modelo;
-            producto.Color = articulo.Color;
-            producto.Placa = articulo.Placa;
-            producto.NumeroChasis = articulo.NumeroChasis;
-            producto.NumeroMotor = articulo.NumeroMotor;
-            producto.Observaciones = articulo.Observaciones;
-            
-            await this.appDbContext.SaveChangesAsync();
-            
-            return Ok(new
+            // Manejo de errores generales
+            catch (Exception ex)
             {
-                isSuccess = true, status = 200, message = "Articulo actualizado exitosamente.", producto = producto
-            });
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
+            }
         }
         
         [HttpDelete("{id}")]
         public async Task<IActionResult> Destroy(string id)
         {
-            var producto = await this.appDbContext.ArticulosTbs.FindAsync(id);
-            
-            if (producto == null)
+            try
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "Articulo no encontrado." });
+                var producto = await this.appDbContext.ArticulosTbs.FindAsync(id);
+
+                if (producto == null)
+                {
+                    return NotFound(new { isSuccess = false, status = 404, message = "Articulo no encontrado." });
+                }
+
+                this.appDbContext.ArticulosTbs.Remove(producto);
+                await this.appDbContext.SaveChangesAsync();
+
+                return Ok(new { isSuccess = true, status = 200, message = "Articulo eliminado exitosamente." });
+            }   // Manejo específico de errores relacionados con la base de datos
+            catch (DbUpdateException dbEx)
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
             }
-            
-            this.appDbContext.ArticulosTbs.Remove(producto);
-            await this.appDbContext.SaveChangesAsync();
-            
-            return Ok(new { isSuccess = true, status = 200, message = "Articulo eliminado exitosamente." });
+            // Manejo de errores generales
+            catch (Exception ex)
+            {
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
+            }
         }
     }
 }

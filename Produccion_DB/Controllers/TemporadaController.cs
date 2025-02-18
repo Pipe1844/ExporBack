@@ -22,16 +22,25 @@ namespace Produccion_DB.Controllers
             try
             {
                 // Intentamos obtener la lista de temporadas
-                var temporadas = await this.appDbContext.TemporadaTbs.ToListAsync();
+                var temporadas = await this.appDbContext.TemporadaTbs.
+                    Select(t=>new
+                    {
+                        t.Temporada,
+                        t.Actual,
+                        t.FechaInicio,
+                        t.FechaFin,
+                        t.Descripcion
+                    })
+                    .ToListAsync();
 
                 // Verificamos si la lista está vacía
-                if (temporadas == null || !temporadas.Any())
+                if (temporadas.Count==0)
                 {
                     return Ok(new 
                     { 
                         isSuccess = true, 
                         status = 204, 
-                        Temporadas = new List<Object>() 
+                        Temporadas = new List<object>() 
                     });
                 }
                 return Ok(new 
@@ -42,19 +51,19 @@ namespace Produccion_DB.Controllers
                 });
             }
             catch (DbUpdateException dbEx)
-            {
-                // Manejo específico de errores relacionados con la base de datos
+            { 
                 return StatusCode(500, new 
                 { 
                     isSuccess = false, 
                     status = 500, 
                     message = "Ocurrió un error al acceder a la base de datos.", 
-                    error = dbEx.Message 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
                 });
             }
+            // Manejo de errores generales
             catch (Exception ex)
             {
-                // Manejo de errores generales
                 return StatusCode(500, new 
                 { 
                     isSuccess = false, 
@@ -70,16 +79,17 @@ namespace Produccion_DB.Controllers
         {
             try
             {
-                var temporadas = await this.appDbContext.TemporadaTbs.Select(t=>new{t.Temporada}).ToListAsync();
+                var temporadas = await this.appDbContext.TemporadaTbs.
+                    Select(t=>new{t.Temporada}).ToListAsync();
 
                 // Verificamos si la lista está vacía
-                if (temporadas == null || !temporadas.Any())
+                if (temporadas.Count==0)
                 {
                     return Ok(new 
                     { 
                         isSuccess = true, 
                         status = 204, 
-                        Temporadas = new List<Object>() 
+                        Temporadas = new List<object>() 
                     });
                 }
                 return Ok(new 
@@ -90,18 +100,19 @@ namespace Produccion_DB.Controllers
                 });
             }
             catch (DbUpdateException dbEx)
-            {
+            { 
                 return StatusCode(500, new 
                 { 
                     isSuccess = false, 
                     status = 500, 
                     message = "Ocurrió un error al acceder a la base de datos.", 
-                    error = dbEx.Message 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
                 });
             }
+            // Manejo de errores generales
             catch (Exception ex)
             {
-                // Manejo de errores generales
                 return StatusCode(500, new 
                 { 
                     isSuccess = false, 
@@ -120,13 +131,13 @@ namespace Produccion_DB.Controllers
                 var temporadaActual = await this.appDbContext.TemporadaTbs.
                     Where(l=>l.Actual==true).ToListAsync();
 
-                if (temporadaActual == null || !temporadaActual.Any())
+                if (temporadaActual.Count==0)
                 {
                     return Ok(new 
                     { 
                         isSuccess = true, 
                         status = 204, 
-                        TemporadaActual = new List<Object>() 
+                        TemporadaActual = new List<object>() 
                     });
                 }
                 return Ok(new 
@@ -137,19 +148,19 @@ namespace Produccion_DB.Controllers
                 });
             }
             catch (DbUpdateException dbEx)
-            {
-                // Manejo específico de errores relacionados con la base de datos
+            { 
                 return StatusCode(500, new 
                 { 
                     isSuccess = false, 
                     status = 500, 
                     message = "Ocurrió un error al acceder a la base de datos.", 
-                    error = dbEx.Message 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
                 });
             }
+            // Manejo de errores generales
             catch (Exception ex)
             {
-                // Manejo de errores generales
                 return StatusCode(500, new 
                 { 
                     isSuccess = false, 
@@ -165,7 +176,15 @@ namespace Produccion_DB.Controllers
         {
             try
             {
-                var temporada = await this.appDbContext.TemporadaTbs.FindAsync(id);
+                var temporada = await this.appDbContext.TemporadaTbs.
+                    Select(t=>new
+                    {
+                        t.Temporada,
+                        t.Actual,
+                        t.FechaInicio,
+                        t.FechaFin,
+                        t.Descripcion
+                    }).FirstOrDefaultAsync(tem=>tem.Temporada==id);
         
                 if (temporada == null)
                 {
@@ -185,15 +204,17 @@ namespace Produccion_DB.Controllers
                 });
             }
             catch (DbUpdateException dbEx)
-            {
+            { 
                 return StatusCode(500, new 
                 { 
                     isSuccess = false, 
                     status = 500, 
-                    message = "Error al acceder a la base de datos.", 
-                    error = dbEx.Message 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
                 });
             }
+            // Manejo de errores generales
             catch (Exception ex)
             {
                 return StatusCode(500, new 
@@ -209,16 +230,7 @@ namespace Produccion_DB.Controllers
         [HttpPost]
         public async Task<IActionResult> Store([FromBody] TemporadaTb temporada)
         {
-            if (temporada == null)
-            {
-                return BadRequest(new 
-                { 
-                    isSuccess = false, 
-                    status = 400, 
-                    message = "Datos inválidos." 
-                });
-            }
-
+         
             try
             {
                 await this.appDbContext.TemporadaTbs.AddAsync(temporada);
@@ -233,15 +245,17 @@ namespace Produccion_DB.Controllers
                 });
             }
             catch (DbUpdateException dbEx)
-            {
+            { 
                 return StatusCode(500, new 
                 { 
                     isSuccess = false, 
                     status = 500, 
-                    message = "Error al guardar en la base de datos.", 
-                    error = dbEx.Message 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
                 });
             }
+            // Manejo de errores generales
             catch (Exception ex)
             {
                 return StatusCode(500, new 
@@ -257,41 +271,91 @@ namespace Produccion_DB.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, [FromBody] TemporadaTb temporadaa)
         {
-            var producto = await this.appDbContext.TemporadaTbs.FindAsync(id);
-            
-            if (producto == null)
+            try
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "Temporada no encontrado." });
-            }
+                var producto = await this.appDbContext.TemporadaTbs.FindAsync(id);
 
-            producto.Temporada = temporadaa.Temporada;
-            producto.Actual = temporadaa.Actual;
-            producto.Descripcion = temporadaa.Descripcion;
-            producto.FechaInicio = temporadaa.FechaInicio;
-            producto.FechaFin = temporadaa.FechaFin;
-           
-            
-            await this.appDbContext.SaveChangesAsync();
-            return Ok(new
+                if (producto == null)
+                {
+                    return NotFound(new { isSuccess = false, status = 404, message = "Temporada no encontrado." });
+                }
+
+                producto.Temporada = temporadaa.Temporada;
+                producto.Actual = temporadaa.Actual;
+                producto.Descripcion = temporadaa.Descripcion;
+                producto.FechaInicio = temporadaa.FechaInicio;
+                producto.FechaFin = temporadaa.FechaFin;
+
+
+                await this.appDbContext.SaveChangesAsync();
+                return Ok(new
+                {
+                    isSuccess = true, status = 200, message = "Temporada actualizada exitosamente.", producto = producto
+                });
+            }
+            catch (DbUpdateException dbEx)
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
+            }
+            // Manejo de errores generales
+            catch (Exception ex)
             {
-                isSuccess = true, status = 200, message = "Temporada actualizada exitosamente.", producto = producto
-            });
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
+            }
         }
         
         [HttpDelete("{id}")]
         public async Task<IActionResult> Destroy(string id)
         {
-            var temporada = await this.appDbContext.TemporadaTbs.FindAsync(id);
-            
-            if (temporada == null)
+            try
             {
-                return NotFound(new { isSuccess = false, status = 404, message = "Temporada no encontrada." });
+                var temporada = await this.appDbContext.TemporadaTbs.FindAsync(id);
+
+                if (temporada == null)
+                {
+                    return NotFound(new { isSuccess = false, status = 404, message = "Temporada no encontrada." });
+                }
+
+                this.appDbContext.TemporadaTbs.Remove(temporada);
+                await this.appDbContext.SaveChangesAsync();
+
+                return Ok(new { isSuccess = true, status = 200, message = "Temporada eliminada exitosamente." });
             }
-            
-            this.appDbContext.TemporadaTbs.Remove(temporada);
-            await this.appDbContext.SaveChangesAsync();
-            
-            return Ok(new { isSuccess = true, status = 200, message = "Temporada eliminada exitosamente." });
+            catch (DbUpdateException dbEx)
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
+            }
+            // Manejo de errores generales
+            catch (Exception ex)
+            {
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
+            }
         }
     }    
 }

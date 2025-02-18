@@ -16,6 +16,63 @@ namespace Produccion_DB.Controllers
             _appDbContext = appDbContext;  
         }  
 
+        // GET: api/v2/certificaciones  
+        [HttpGet]  
+        public async Task<IActionResult> Index()  
+        {  
+            try  
+            {  
+                var certificaciones = await _appDbContext.CertificacionesTbs  
+                    .Select(c => new  
+                    {  
+                        c.IdProducto,  
+                        c.NombreCertificacion,  
+                        c.DdtPrecosecha,  
+                        c.Comentarios  
+                    })  
+                    .ToListAsync();  
+
+                if (certificaciones.Count==0)  
+                {  
+                    return Ok(new  
+                    {  
+                        isSuccess = true,  
+                        status = 204,  
+                        Certificaciones = new List<object>()  
+                    });  
+                }  
+
+                return Ok(new  
+                {  
+                    isSuccess = true,  
+                    status = 200,  
+                    Certificaciones = certificaciones  
+                });  
+            }  
+            catch (DbUpdateException dbEx)
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
+            }
+            // Manejo de errores generales
+            catch (Exception ex)
+            {
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
+            }
+        }
+        
         // GET: api/v2/certificaciones/{idProducto}  
         [HttpGet("{idProducto}")]  
         public async Task<IActionResult> GetCertificacionesByProducto(string idProducto)  
@@ -33,13 +90,13 @@ namespace Produccion_DB.Controllers
                     })  
                     .ToListAsync();  
 
-                if (certificaciones == null || !certificaciones.Any())  
+                if (certificaciones.Count==0)  
                 {  
                     return Ok(new   
                     {   
                         isSuccess = true,   
                         status = 204,   
-                        Certificaciones = new List<Object>()   
+                        Certificaciones = new List<object>()   
                     });  
                 }  
 
@@ -50,36 +107,35 @@ namespace Produccion_DB.Controllers
                     Certificaciones = certificaciones   
                 });  
             }  
-            catch (DbUpdateException dbEx)  
-            {  
-                return StatusCode(500, new   
-                {   
-                    isSuccess = false,   
-                    status = 500,   
-                    message = "Ocurrió un error al acceder a la base de datos.",   
-                    error = dbEx.Message   
-                });  
-            }  
-            catch (Exception ex)  
-            {  
-                return StatusCode(500, new   
-                {   
-                    isSuccess = false,   
-                    status = 500,   
-                    message = "Ocurrió un error inesperado.",   
-                    error = ex.Message   
-                });  
-            }  
+            catch (DbUpdateException dbEx)
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
+            }
+            // Manejo de errores generales
+            catch (Exception ex)
+            {
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
+            }
         }
 
         // POST: api/v2/certificaciones  
         [HttpPost]  
         public async Task<IActionResult> Store([FromBody] CertificacionRequest request)  
         {  
-            if (request == null || !ModelState.IsValid)  
-            {  
-                return BadRequest(ModelState);  
-            }  
+          try{
     
             var certificacion = new CertificacionesTb  
             {  
@@ -88,9 +144,7 @@ namespace Produccion_DB.Controllers
                 DdtPrecosecha = request.DdtPrecosecha,  
                 Comentarios = request.Comentarios  
             };  
-
-            try  
-            {  
+ 
                 await _appDbContext.CertificacionesTbs.AddAsync(certificacion);  
                 await _appDbContext.SaveChangesAsync();  
 
@@ -101,72 +155,125 @@ namespace Produccion_DB.Controllers
                     message = "Certificación creada exitosamente.",   
                     certificacion  
                 });  
-            }  
-            catch (Exception ex)  
-            {  
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error interno del servidor.", error = ex.Message });  
-            }  
+          }  
+          catch (DbUpdateException dbEx)
+          { 
+              return StatusCode(500, new 
+              { 
+                  isSuccess = false, 
+                  status = 500, 
+                  message = "Ocurrió un error al acceder a la base de datos.", 
+                  error = dbEx.Message,
+                  innerError = dbEx.InnerException?.Message
+              });
+          }
+          // Manejo de errores generales
+          catch (Exception ex)
+          {
+              return StatusCode(500, new 
+              { 
+                  isSuccess = false, 
+                  status = 500, 
+                  message = "Ocurrió un error inesperado.", 
+                  error = ex.Message 
+              });
+          } 
         }
 
-        // PUT: api/v2/certificaciones/{id}  
-        [HttpPut("{id}")]  
-        public async Task<IActionResult> Update(string id, [FromBody] CertificacionesTb certificacionActualizada)  
+        // PUT: api/v2/certificaciones/{idProducto}/{nombreCertificacion}  
+[HttpPut("{idProducto}/{nombreCertificacion}")]  
+public async Task<IActionResult> Update(string idProducto, string nombreCertificacion, [FromBody] CertificacionesTb certificacionActualizada)  
+{  
+    try  
+    {  
+        var certificacion = await _appDbContext.CertificacionesTbs  
+            .FindAsync(idProducto, nombreCertificacion); // Usa ambos parámetros de clave  
+
+        if (certificacion == null)  
         {  
-            try  
-            {  
-                var certificacion = await _appDbContext.CertificacionesTbs.FindAsync(id);  
-
-                if (certificacion == null)  
-                {  
-                    return NotFound(new { isSuccess = false, status = 404, message = "Certificación no encontrada." });  
-                }  
-
-                if (certificacionActualizada == null)  
-                {  
-                    return BadRequest(new { isSuccess = false, status = 400, message = "Datos de certificación inválidos." });  
-                }  
-
-                // Actualizar los atributos de la certificación  
-                certificacion.NombreCertificacion = certificacionActualizada.NombreCertificacion; // Asegúrate de que los nombres sean correctos  
-                certificacion.Comentarios = certificacionActualizada.Comentarios;  
-                certificacion.DdtPrecosecha = certificacionActualizada.DdtPrecosecha;  
-
-                await _appDbContext.SaveChangesAsync();  
-
-                return Ok(new  
-                {  
-                    isSuccess = true, status = 200, message = "Certificación actualizada exitosamente.", certificacion  
-                });  
-            }  
-            catch (Exception ex)  
-            {  
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error interno del servidor.", error = ex.Message });  
-            }  
+            return NotFound(new { isSuccess = false, status = 404, message = "Certificación no encontrada." });  
         }  
 
-        // DELETE: api/v2/certificaciones/{id}  
-        [HttpDelete("{id}")]  
-        public async Task<IActionResult> Destroy(string id)  
+        // Actualizar los atributos de la certificación  
+        //certificacion.NombreCertificacion = certificacionActualizada.NombreCertificacion;  
+        certificacion.DdtPrecosecha = certificacionActualizada.DdtPrecosecha;  
+        certificacion.Comentarios = certificacionActualizada.Comentarios;  
+
+        await _appDbContext.SaveChangesAsync();  
+
+        return Ok(new  
         {  
-            try  
-            {  
-                var certificacion = await _appDbContext.CertificacionesTbs.FindAsync(id);  
+            isSuccess = true,   
+            status = 200,   
+            message = "Certificación actualizada exitosamente.",   
+            certificacion  
+        });  
+    }  
+    catch (DbUpdateException dbEx)
+    { 
+        return StatusCode(500, new 
+        { 
+            isSuccess = false, 
+            status = 500, 
+            message = "Ocurrió un error al acceder a la base de datos.", 
+            error = dbEx.Message,
+            innerError = dbEx.InnerException?.Message
+        });
+    }
+    // Manejo de errores generales
+    catch (Exception ex)
+    {
+        return StatusCode(500, new 
+        { 
+            isSuccess = false, 
+            status = 500, 
+            message = "Ocurrió un error inesperado.", 
+            error = ex.Message 
+        });
+    } 
+}  
 
-                if (certificacion == null)  
-                {  
-                    return NotFound(new { isSuccess = false, status = 404, message = "Certificación no encontrada." });  
-                }  
+// DELETE: api/v2/certificaciones/{idProducto}/{nombreCertificacion}  
+[HttpDelete("{idProducto}/{nombreCertificacion}")]  
+public async Task<IActionResult> Destroy(string idProducto, string nombreCertificacion)  
+{  
+    try  
+    {  
+        var certificacion = await _appDbContext.CertificacionesTbs.FindAsync(idProducto, nombreCertificacion);  
 
-                _appDbContext.CertificacionesTbs.Remove(certificacion);  
-                await _appDbContext.SaveChangesAsync();  
-
-                return Ok(new { isSuccess = true, status = 200, message = "Certificación eliminada exitosamente." });  
-            }  
-            catch (Exception ex)  
-            {  
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error interno del servidor.", error = ex.Message });  
-            }  
+        if (certificacion == null)  
+        {  
+            return NotFound(new { isSuccess = false, status = 404, message = "Certificación no encontrada." });  
         }  
+
+        _appDbContext.CertificacionesTbs.Remove(certificacion);  
+        await _appDbContext.SaveChangesAsync();  
+
+        return Ok(new { isSuccess = true, status = 200, message = "Certificación eliminada exitosamente." });  
+    }  
+    catch (DbUpdateException dbEx)
+    { 
+        return StatusCode(500, new 
+        { 
+            isSuccess = false, 
+            status = 500, 
+            message = "Ocurrió un error al acceder a la base de datos.", 
+            error = dbEx.Message,
+            innerError = dbEx.InnerException?.Message
+        });
+    }
+    // Manejo de errores generales
+    catch (Exception ex)
+    {
+        return StatusCode(500, new 
+        { 
+            isSuccess = false, 
+            status = 500, 
+            message = "Ocurrió un error inesperado.", 
+            error = ex.Message 
+        });
+    } 
+}
     }  
     public class CertificacionRequest  
     {  
