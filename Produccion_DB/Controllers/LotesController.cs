@@ -21,16 +21,24 @@ namespace Produccion_DB.Controllers
                    try
                    {
                        // Intentamos obtener la lista de temporadas
-                       var lotes = await this.appDbContext.LotesFisicosTbs.ToListAsync();
+                       var lotes = await this.appDbContext.LotesFisicosTbs.
+                           Select(l=>new
+                           {
+                               l.NombreLote,
+                               l.Activo,
+                               l.Area,
+                               l.Descripcion
+                           })
+                           .ToListAsync();
        
                        // Verificamos si la lista está vacía
-                       if (lotes == null || !lotes.Any())
+                       if (lotes.Count==0)
                        {
                            return Ok(new 
                            { 
                                isSuccess = true, 
                                status = 204, 
-                               Lotes = new List<Object>() 
+                               Lotes = new List<object>() 
                            });
                        }
                        return Ok(new 
@@ -41,19 +49,19 @@ namespace Produccion_DB.Controllers
                        });
                    }
                    catch (DbUpdateException dbEx)
-                   {
-                       // Manejo específico de errores relacionados con la base de datos
+                   { 
                        return StatusCode(500, new 
                        { 
                            isSuccess = false, 
                            status = 500, 
                            message = "Ocurrió un error al acceder a la base de datos.", 
-                           error = dbEx.Message 
+                           error = dbEx.Message,
+                           innerError = dbEx.InnerException?.Message
                        });
                    }
+                   // Manejo de errores generales
                    catch (Exception ex)
                    {
-                       // Manejo de errores generales
                        return StatusCode(500, new 
                        { 
                            isSuccess = false, 
@@ -77,13 +85,13 @@ namespace Produccion_DB.Controllers
                    ToListAsync();
        
                // Verificamos si la lista está vacía
-               if (lotesActivos == null || !lotesActivos.Any())
+               if (lotesActivos.Count==0)
                {
                    return Ok(new 
                    { 
                        isSuccess = true, 
                        status = 204, 
-                       LotesActivos = new List<Object>() 
+                       LotesActivos = new List<object>() 
                    });
                }
                return Ok(new 
@@ -94,19 +102,19 @@ namespace Produccion_DB.Controllers
                });
            }
            catch (DbUpdateException dbEx)
-           {
-               // Manejo específico de errores relacionados con la base de datos
+           { 
                return StatusCode(500, new 
                { 
                    isSuccess = false, 
                    status = 500, 
                    message = "Ocurrió un error al acceder a la base de datos.", 
-                   error = dbEx.Message 
+                   error = dbEx.Message,
+                   innerError = dbEx.InnerException?.Message
                });
            }
+           // Manejo de errores generales
            catch (Exception ex)
            {
-               // Manejo de errores generales
                return StatusCode(500, new 
                { 
                    isSuccess = false, 
@@ -117,135 +125,190 @@ namespace Produccion_DB.Controllers
            }
        }
                
-               [HttpGet("{id}")]
-                       public async Task<IActionResult> Show(string id)
+           [HttpGet("{id}")]
+                   public async Task<IActionResult> Show(string id)
+                   {
+                       try
                        {
-                           try
-                           {
-                               var lote = await this.appDbContext.LotesFisicosTbs.FindAsync(id);
-                       
-                               if (lote == null)
+                           var lote = await this.appDbContext.LotesFisicosTbs.
+                               Select(l=>new
                                {
-                                   return NotFound(new 
-                                   { 
-                                       isSuccess = false, 
-                                       status = 404, 
-                                       message = "Lote no encontrado." 
-                                   });
-                               }
-               
-                               return Ok(new 
-                               { 
-                                   isSuccess = true, 
-                                   status = 200, 
-                                   Lotes = lote 
-                               });
-                           }
-                           catch (DbUpdateException dbEx)
-                           {
-                               return StatusCode(500, new 
-                               { 
-                                   isSuccess = false, 
-                                   status = 500, 
-                                   message = "Error al acceder a la base de datos.", 
-                                   error = dbEx.Message 
-                               });
-                           }
-                           catch (Exception ex)
-                           {
-                               return StatusCode(500, new 
-                               { 
-                                   isSuccess = false, 
-                                   status = 500, 
-                                   message = "Ocurrió un error inesperado.", 
-                                   error = ex.Message 
-                               });
-                           }
-                       }
-                       
-                       [HttpPost]
-                       public async Task<IActionResult> Store([FromBody] LotesFisicosTb lote)
-                       {
+                                   l.NombreLote,
+                                   l.Activo,
+                                   l.Area,
+                                   l.Descripcion
+                               }).FirstOrDefaultAsync(lo=>lo.NombreLote==id);
+                   
                            if (lote == null)
                            {
-                               return BadRequest(new 
+                               return NotFound(new 
                                { 
                                    isSuccess = false, 
-                                   status = 400, 
-                                   message = "Datos inválidos." 
+                                   status = 404, 
+                                   message = "Lote no encontrado." 
                                });
                            }
-
-                           try
-                           {
-                               await this.appDbContext.LotesFisicosTbs.AddAsync(lote);
-                               await this.appDbContext.SaveChangesAsync();
-
-                               return Ok(new 
-                               { 
-                                   isSuccess = true, 
-                                   status = 201, 
-                                   message = "Lote creado con éxito.", 
-                                   Lote = lote 
-                               });
-                           }
-                           catch (DbUpdateException dbEx)
-                           {
-                               return StatusCode(500, new 
-                               { 
-                                   isSuccess = false, 
-                                   status = 500, 
-                                   message = "Error al guardar en la base de datos.", 
-                                   error = dbEx.Message 
-                               });
-                           }
-                           catch (Exception ex)
-                           {
-                               return StatusCode(500, new 
-                               { 
-                                   isSuccess = false, 
-                                   status = 500, 
-                                   message = "Ocurrió un error inesperado.", 
-                                   error = ex.Message 
-                               });
-                           }
+           
+                           return Ok(new 
+                           { 
+                               isSuccess = true, 
+                               status = 200, 
+                               Lotes = lote 
+                           });
                        }
-                       [HttpPut("{id}")]
-                       public async Task<IActionResult> Update(string id, [FromBody] LotesFisicosTb lote)
+                       catch (DbUpdateException dbEx)
+                       { 
+                           return StatusCode(500, new 
+                           { 
+                               isSuccess = false, 
+                               status = 500, 
+                               message = "Ocurrió un error al acceder a la base de datos.", 
+                               error = dbEx.Message,
+                               innerError = dbEx.InnerException?.Message
+                           });
+                       }
+                       // Manejo de errores generales
+                       catch (Exception ex)
                        {
-                           var Lote = await this.appDbContext.LotesFisicosTbs.FindAsync(id);
-            
-                           if (Lote == null)
+                           return StatusCode(500, new 
+                           { 
+                               isSuccess = false, 
+                               status = 500, 
+                               message = "Ocurrió un error inesperado.", 
+                               error = ex.Message 
+                           });
+                       }
+                   }
+                   
+                   [HttpPost]
+                   public async Task<IActionResult> Store([FromBody] LotesFisicosTb lote)
+                   {
+
+                       try
+                       {
+                           await this.appDbContext.LotesFisicosTbs.AddAsync(lote);
+                           await this.appDbContext.SaveChangesAsync();
+
+                           return Ok(new 
+                           { 
+                               isSuccess = true, 
+                               status = 201, 
+                               message = "Lote creado con éxito.", 
+                               Lote = lote 
+                           });
+                       }
+                       catch (DbUpdateException dbEx)
+                       { 
+                           return StatusCode(500, new 
+                           { 
+                               isSuccess = false, 
+                               status = 500, 
+                               message = "Ocurrió un error al acceder a la base de datos.", 
+                               error = dbEx.Message,
+                               innerError = dbEx.InnerException?.Message
+                           });
+                       }
+                       // Manejo de errores generales
+                       catch (Exception ex)
+                       {
+                           return StatusCode(500, new 
+                           { 
+                               isSuccess = false, 
+                               status = 500, 
+                               message = "Ocurrió un error inesperado.", 
+                               error = ex.Message 
+                           });
+                       }
+                   }
+                   [HttpPut("{id}")]
+                   public async Task<IActionResult> Update(string id, [FromBody] LotesFisicosTb lote)
+                   {
+                       try
+                       {
+                           var loteFinded = await this.appDbContext.LotesFisicosTbs.FindAsync(id);
+
+                           if (loteFinded == null)
                            {
-                               return NotFound(new { isSuccess = false, status = 404, message = "Lote no encontrado." });
+                               return NotFound(new
+                                   { isSuccess = false, status = 404, message = "Lote no encontrado." });
                            }
 
-                           Lote.NombreLote = lote.NombreLote;
-                           Lote.Activo = lote.Activo;
-                           Lote.Descripcion = lote.Descripcion;
-                           Lote.Area = lote.Area;
-                           
+                           loteFinded.NombreLote = lote.NombreLote;
+                           loteFinded.Activo = lote.Activo;
+                           loteFinded.Descripcion = lote.Descripcion;
+                           loteFinded.Area = lote.Area;
+
                            await this.appDbContext.SaveChangesAsync();
                            return Ok(new
                            {
-                               isSuccess = true, status = 200, message = "Lote actualizado exitosamente.", producto = Lote
+                               isSuccess = true, status = 200, message = "Lote actualizado exitosamente.",
+                               producto = loteFinded
+                           });
+                       }catch (DbUpdateException dbEx)
+                       { 
+                           return StatusCode(500, new 
+                           { 
+                               isSuccess = false, 
+                               status = 500, 
+                               message = "Ocurrió un error al acceder a la base de datos.", 
+                               error = dbEx.Message,
+                               innerError = dbEx.InnerException?.Message
                            });
                        }
-                       [HttpDelete("{id}")]
-                       public async Task<IActionResult> Destroy(string id)
+                       // Manejo de errores generales
+                       catch (Exception ex)
+                       {
+                           return StatusCode(500, new 
+                           { 
+                               isSuccess = false, 
+                               status = 500, 
+                               message = "Ocurrió un error inesperado.", 
+                               error = ex.Message 
+                           });
+                       }
+                   }
+                   
+                   [HttpDelete("{id}")]
+                   public async Task<IActionResult> Destroy(string id)
+                   {
+                       try
                        {
                            var lote = await this.appDbContext.LotesFisicosTbs.FindAsync(id);
-            
+
                            if (lote == null)
                            {
-                               return NotFound(new { isSuccess = false, status = 404, message = "Lote no encontrado." });
+                               return NotFound(new
+                                   { isSuccess = false, status = 404, message = "Lote no encontrado." });
                            }
-            
+
                            this.appDbContext.LotesFisicosTbs.Remove(lote);
                            await this.appDbContext.SaveChangesAsync();
-            
+
                            return Ok(new { isSuccess = true, status = 200, message = "Lote eliminado exitosamente." });
                        }
+                       catch (DbUpdateException dbEx)
+                       { 
+                           return StatusCode(500, new 
+                           { 
+                               isSuccess = false, 
+                               status = 500, 
+                               message = "Ocurrió un error al acceder a la base de datos.", 
+                               error = dbEx.Message,
+                               innerError = dbEx.InnerException?.Message
+                           });
+                       }
+                       // Manejo de errores generales
+                       catch (Exception ex)
+                       {
+                           return StatusCode(500, new 
+                           { 
+                               isSuccess = false, 
+                               status = 500, 
+                               message = "Ocurrió un error inesperado.", 
+                               error = ex.Message 
+                           });
+                       }
+                   }
    } 
     
 }

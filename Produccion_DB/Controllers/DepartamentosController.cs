@@ -30,13 +30,13 @@ namespace Produccion_DB.Controllers
                            })  
                            .ToListAsync();  
 
-                       if (departamentos == null || !departamentos.Any())  
+                       if (departamentos.Count == 0)  
                        {  
                            return Ok(new   
                            {   
                                isSuccess = true,   
                                status = 204,   
-                               Departamentos = new List<Object>()   
+                               Departamentos = new List<object>()   
                            });  
                        }  
 
@@ -47,26 +47,28 @@ namespace Produccion_DB.Controllers
                            Departamentos = departamentos   
                        });  
                    }  
-                   catch (DbUpdateException dbEx)  
-                   {  
-                       return StatusCode(500, new   
-                       {   
-                           isSuccess = false,   
-                           status = 500,   
-                           message = "Ocurrió un error al acceder a la base de datos.",   
-                           error = dbEx.Message   
-                       });  
-                   }  
-                   catch (Exception ex)  
-                   {  
-                       return StatusCode(500, new   
-                       {   
-                           isSuccess = false,   
-                           status = 500,   
-                           message = "Ocurrió un error inesperado.",   
-                           error = ex.Message   
-                       });  
-                   }  
+                   catch (DbUpdateException dbEx)
+                   { 
+                       return StatusCode(500, new 
+                       { 
+                           isSuccess = false, 
+                           status = 500, 
+                           message = "Ocurrió un error al acceder a la base de datos.", 
+                           error = dbEx.Message,
+                           innerError = dbEx.InnerException?.Message
+                       });
+                   }
+                   // Manejo de errores generales
+                   catch (Exception ex)
+                   {
+                       return StatusCode(500, new 
+                       { 
+                           isSuccess = false, 
+                           status = 500, 
+                           message = "Ocurrió un error inesperado.", 
+                           error = ex.Message 
+                       });
+                   } 
                }  
                
                [HttpGet("{id}")]
@@ -74,7 +76,14 @@ namespace Produccion_DB.Controllers
                        {
                            try
                            {
-                               var departamento = await this.appDbContext.DepartamentoTbs.FindAsync(id);
+                               var departamento = await this.appDbContext.DepartamentoTbs.
+                                   Select(d => new  
+                                   {  
+                                       d.Departamento,  
+                                       d.Encargado,  
+                                       d.Descripcion  
+                                   })
+                                   .FirstOrDefaultAsync(dep=>dep.Departamento==id);
                        
                                if (departamento == null)
                                {
@@ -94,15 +103,17 @@ namespace Produccion_DB.Controllers
                                });
                            }
                            catch (DbUpdateException dbEx)
-                           {
+                           { 
                                return StatusCode(500, new 
                                { 
                                    isSuccess = false, 
                                    status = 500, 
-                                   message = "Error al acceder a la base de datos.", 
-                                   error = dbEx.Message 
+                                   message = "Ocurrió un error al acceder a la base de datos.", 
+                                   error = dbEx.Message,
+                                   innerError = dbEx.InnerException?.Message
                                });
                            }
+                           // Manejo de errores generales
                            catch (Exception ex)
                            {
                                return StatusCode(500, new 
@@ -112,21 +123,12 @@ namespace Produccion_DB.Controllers
                                    message = "Ocurrió un error inesperado.", 
                                    error = ex.Message 
                                });
-                           }
+                           } 
                        }
                        
                        [HttpPost]
                        public async Task<IActionResult> Store([FromBody] DepartamentoTb departamento)
                        {
-                           if (departamento == null)
-                           {
-                               return BadRequest(new 
-                               { 
-                                   isSuccess = false, 
-                                   status = 400, 
-                                   message = "Datos inválidos." 
-                               });
-                           }
 
                            try
                            {
@@ -142,15 +144,17 @@ namespace Produccion_DB.Controllers
                                });
                            }
                            catch (DbUpdateException dbEx)
-                           {
+                           { 
                                return StatusCode(500, new 
                                { 
                                    isSuccess = false, 
                                    status = 500, 
-                                   message = "Error al guardar en la base de datos.", 
-                                   error = dbEx.Message 
+                                   message = "Ocurrió un error al acceder a la base de datos.", 
+                                   error = dbEx.Message,
+                                   innerError = dbEx.InnerException?.Message
                                });
                            }
+                           // Manejo de errores generales
                            catch (Exception ex)
                            {
                                return StatusCode(500, new 
@@ -160,42 +164,96 @@ namespace Produccion_DB.Controllers
                                    message = "Ocurrió un error inesperado.", 
                                    error = ex.Message 
                                });
-                           }
+                           } 
                        }
                        [HttpPut("{id}")]
                        public async Task<IActionResult> Update(string id, [FromBody] DepartamentoTb departamentoEntrante)
                        {
-                           var departamentoModificar = await this.appDbContext.DepartamentoTbs.FindAsync(id);
-            
-                           if (departamentoModificar == null)
+                           try
                            {
-                               return NotFound(new { isSuccess = false, status = 404, message = "Departamento no encontrado." });
-                           }
+                               var departamentoModificar = await this.appDbContext.DepartamentoTbs.FindAsync(id);
 
-                           departamentoModificar.Departamento = departamentoEntrante.Departamento;
-                           departamentoModificar.Encargado = departamentoEntrante.Encargado;
-                           departamentoModificar.Descripcion = departamentoEntrante.Descripcion;
-                           
-                           await this.appDbContext.SaveChangesAsync();
-                           return Ok(new
+                               if (departamentoModificar == null)
+                               {
+                                   return NotFound(new
+                                       { isSuccess = false, status = 404, message = "Departamento no encontrado." });
+                               }
+
+                               departamentoModificar.Departamento = departamentoEntrante.Departamento;
+                               departamentoModificar.Encargado = departamentoEntrante.Encargado;
+                               departamentoModificar.Descripcion = departamentoEntrante.Descripcion;
+
+                               await this.appDbContext.SaveChangesAsync();
+                               return Ok(new
+                               {
+                                   isSuccess = true, status = 200, message = "Departamento actualizado exitosamente.",
+                                   producto = departamentoModificar
+                               });
+                           } catch (DbUpdateException dbEx)
+                           { 
+                               return StatusCode(500, new 
+                               { 
+                                   isSuccess = false, 
+                                   status = 500, 
+                                   message = "Ocurrió un error al acceder a la base de datos.", 
+                                   error = dbEx.Message,
+                                   innerError = dbEx.InnerException?.Message
+                               });
+                           }
+                           // Manejo de errores generales
+                           catch (Exception ex)
                            {
-                               isSuccess = true, status = 200, message = "Departamento actualizado exitosamente.", producto = departamentoModificar
-                           });
+                               return StatusCode(500, new 
+                               { 
+                                   isSuccess = false, 
+                                   status = 500, 
+                                   message = "Ocurrió un error inesperado.", 
+                                   error = ex.Message 
+                               });
+                           } 
                        }
                        [HttpDelete("{id}")]
                        public async Task<IActionResult> Destroy(string id)
                        {
-                           var departamento = await this.appDbContext.DepartamentoTbs.FindAsync(id);
-            
-                           if (departamento == null)
+                           try
                            {
-                               return NotFound(new { isSuccess = false, status = 404, message = "Departamento no encontrado." });
+                               var departamento = await this.appDbContext.DepartamentoTbs.FindAsync(id);
+
+                               if (departamento == null)
+                               {
+                                   return NotFound(new
+                                       { isSuccess = false, status = 404, message = "Departamento no encontrado." });
+                               }
+
+                               this.appDbContext.DepartamentoTbs.Remove(departamento);
+                               await this.appDbContext.SaveChangesAsync();
+
+                               return Ok(new
+                               {
+                                   isSuccess = true, status = 200, message = "Departamento eliminado exitosamente."
+                               });
+                           }  catch (DbUpdateException dbEx)
+                           { 
+                               return StatusCode(500, new 
+                               { 
+                                   isSuccess = false, 
+                                   status = 500, 
+                                   message = "Ocurrió un error al acceder a la base de datos.", 
+                                   error = dbEx.Message,
+                                   innerError = dbEx.InnerException?.Message
+                               });
                            }
-            
-                           this.appDbContext.DepartamentoTbs.Remove(departamento);
-                           await this.appDbContext.SaveChangesAsync();
-            
-                           return Ok(new { isSuccess = true, status = 200, message = "Departamento eliminado exitosamente." });
+                           // Manejo de errores generales
+                           catch (Exception ex)
+                           {
+                               return StatusCode(500, new 
+                               { 
+                                   isSuccess = false, 
+                                   status = 500, 
+                                   message = "Ocurrió un error inesperado.", 
+                                   error = ex.Message 
+                               });
+                           } 
                        }
    } 
 }

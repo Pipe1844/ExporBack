@@ -23,18 +23,47 @@ namespace Produccion_DB.Controllers
         {
             try
             {
-                var productos = await _appDbContext.ProductosTbs.ToListAsync();
+                var productos = await _appDbContext.ProductosTbs.
+                    Select(p =>new
+                    {
+                        p.IdProducto,
+                        p.NombreDescriptivo,
+                        p.TipoUso,
+                        p.NombreComercial,
+                        p.UnidadMedida,
+                        p.IngredienteActivo,
+                        p.ConcentracionIactivo,
+                        p.RestriccionIngreso,
+                        p.Descripcion,
+                        p.Activo
+                    })
+                    .ToListAsync();
 
-                if (productos == null || !productos.Any())
-                {
-                    return Ok(new { isSuccess = true, status = 204, Productos = new List<Object>() });
-                }
-
-                return Ok(new { isSuccess = true, status = 200, Productos = productos });
+                return productos.Count==0 ? 
+                    Ok(new { isSuccess = true, status = 204, Productos = new List<object>() }) : 
+                    Ok(new { isSuccess = true, status = 200, Productos = productos });
             }
+            catch (DbUpdateException dbEx)
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
+            }
+            // Manejo de errores generales
             catch (Exception ex)
             {
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error interno del servidor.", error = ex.Message });
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
             }
         }
 
@@ -44,7 +73,20 @@ namespace Produccion_DB.Controllers
         {
             try
             {
-                var producto = await _appDbContext.ProductosTbs.FindAsync(id);
+                var producto = await _appDbContext.ProductosTbs.
+                    Select(p =>new
+                    {
+                        p.IdProducto,
+                        p.NombreDescriptivo,
+                        p.TipoUso,
+                        p.NombreComercial,
+                        p.UnidadMedida,
+                        p.IngredienteActivo,
+                        p.ConcentracionIactivo,
+                        p.RestriccionIngreso,
+                        p.Descripcion,
+                        p.Activo
+                    }).FirstOrDefaultAsync(p=>p.IdProducto==id);
 
                 if (producto == null)
                 {
@@ -53,9 +95,27 @@ namespace Produccion_DB.Controllers
 
                 return Ok(new { isSuccess = true, status = 200, producto });
             }
+            catch (DbUpdateException dbEx)
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
+            }
+            // Manejo de errores generales
             catch (Exception ex)
             {
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error interno del servidor.", error = ex.Message });
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
             }
         }
 
@@ -65,19 +125,7 @@ namespace Produccion_DB.Controllers
         {
             try
             {
-                if (producto == null)
-                {
-                    return BadRequest(new { isSuccess = false, status = 400, message = "Datos de producto inválidos." });
-                }
-
-                // Verificar campos requeridos
-                if (string.IsNullOrEmpty(producto.NombreDescriptivo) ||
-                    string.IsNullOrEmpty(producto.TipoUso) ||
-                    string.IsNullOrEmpty(producto.NombreComercial) ||
-                    string.IsNullOrEmpty(producto.UnidadMedida))
-                {
-                    return BadRequest(new { isSuccess = false, status = 400, message = "Faltan campos requeridos." });
-                }
+              
                 await _appDbContext.ProductosTbs.AddAsync(producto);
                 await _appDbContext.SaveChangesAsync();
 
@@ -86,9 +134,27 @@ namespace Produccion_DB.Controllers
                     isSuccess = true, status = 201, message = "Producto creado exitosamente.", producto
                 });
             }
+            catch (DbUpdateException dbEx)
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
+            }
+            // Manejo de errores generales
             catch (Exception ex)
             {
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error interno del servidor.", error = ex.Message });
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
             }
         }
 
@@ -105,10 +171,6 @@ namespace Produccion_DB.Controllers
                     return NotFound(new { isSuccess = false, status = 404, message = "Producto no encontrado." });
                 }
 
-                if (productoActualizado == null)
-                {
-                    return BadRequest(new { isSuccess = false, status = 400, message = "Datos de producto inválidos." });
-                }
 
                 // Actualizar los atributos del producto
                 producto.NombreDescriptivo = productoActualizado.NombreDescriptivo;
@@ -128,9 +190,27 @@ namespace Produccion_DB.Controllers
                     isSuccess = true, status = 200, message = "Producto actualizado exitosamente.", producto
                 });
             }
+            catch (DbUpdateException dbEx)
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
+            }
+            // Manejo de errores generales
             catch (Exception ex)
             {
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error interno del servidor.", error = ex.Message });
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
             }
         }
 
@@ -152,9 +232,27 @@ namespace Produccion_DB.Controllers
 
                 return Ok(new { isSuccess = true, status = 200, message = "Producto eliminado exitosamente." });
             }
+            catch (DbUpdateException dbEx)
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
+            }
+            // Manejo de errores generales
             catch (Exception ex)
             {
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error interno del servidor.", error = ex.Message });
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
             }
         }
     }
