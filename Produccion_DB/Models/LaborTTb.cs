@@ -21,9 +21,9 @@ public partial class LaborTTb
 
     public virtual ICollection<DdtLaborTb> DdtLaborTbs { get; set; } = new List<DdtLaborTb>();
 
-    public virtual DepartamentoTb DepartamentoNavigation { get; set; } = null!;
+  /*  public virtual DepartamentoTb DepartamentoNavigation { get; set; } = null!;*/
 
-    public virtual LaboresTb LaboresTb { get; set; } = null!;
+    /*public virtual LaboresTb LaboresTb { get; set; } = null!;*/
 
-    public virtual TemporadaTb TemporadaNavigation { get; set; } = null!;
+   /* public virtual TemporadaTb TemporadaNavigation { get; set; } = null!;*/
 }
