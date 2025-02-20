@@ -178,12 +178,12 @@ namespace Produccion_DB.Controllers
             }
         }
 
-        [HttpPut("{temporada}/{departamento}/{labor}")]
-        public async Task<IActionResult> Update(string temporada,string departamento, string labor,
+        [HttpPut("{temporada}/{departamento}/{siembraNumero}/{labor}")]
+        public async Task<IActionResult> Update(string temporada,string departamento, string labor, int siembraNumero,
             [FromBody] LaborTTb laboresTemporada)
         {
             var laborT = await this.appDbContext.LaborTTbs
-                .FirstOrDefaultAsync(llabor => llabor.Temporada == temporada && llabor.Departamento == departamento && llabor.Labor == labor);
+                .FirstOrDefaultAsync(llabor => llabor.Temporada == temporada && llabor.Departamento == departamento && llabor.Labor == labor && llabor.SiembraNumero == siembraNumero);
             
             if (laborT == null)
             {

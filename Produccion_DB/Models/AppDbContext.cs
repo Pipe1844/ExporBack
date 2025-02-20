@@ -1729,7 +1729,7 @@ public partial class AppDbContext : DbContext
                 .HasDefaultValue(true)
                 .HasColumnName("Aplicar_A_Todo");
 
-            entity.HasOne(d => d.DepartamentoNavigation).WithMany(p => p.LaborTTbs)
+            /*entity.HasOne(d => d.DepartamentoNavigation).WithMany(p => p.LaborTTbs)
                 .HasForeignKey(d => d.Departamento)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("RefDepartamento_TB73");
@@ -1737,12 +1737,12 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.TemporadaNavigation).WithMany(p => p.LaborTTbs)
                 .HasForeignKey(d => d.Temporada)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefTemporada_TB69");
+                .HasConstraintName("RefTemporada_TB69");*/
 
-            entity.HasOne(d => d.LaboresTb).WithMany(p => p.LaborTTbs)
+           /* entity.HasOne(d => d.LaboresTb).WithMany(p => p.LaborTTbs)
                 .HasForeignKey(d => new { d.Labor, d.Departamento })
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefLabores_TB77");
+                .HasConstraintName("RefLabores_TB77");*/
         });
 
        modelBuilder.Entity<LaboresTb>(entity =>
