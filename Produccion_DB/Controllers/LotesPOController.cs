@@ -22,7 +22,6 @@ namespace Produccion_DB.Controllers
                {
                    try
                    {
-                       // Intentamos obtener la lista de lotesPO
                        var lotePo = await this.appDbContext.LotesPoTbs.
                            Select(l=>new
                            {
@@ -42,13 +41,13 @@ namespace Produccion_DB.Controllers
                            }).ToListAsync();
        
                        // Verificamos si la lista está vacía
-                       if (lotePo == null || !lotePo.Any())
+                       if (lotePo.Count==0)
                        {
                            return Ok(new 
                            { 
                                isSuccess = true, 
                                status = 204, 
-                               LotesPO = new List<Object>() 
+                               LotesPO = new List<object>() 
                            });
                        }
                        return Ok(new 
@@ -59,19 +58,19 @@ namespace Produccion_DB.Controllers
                        });
                    }
                    catch (DbUpdateException dbEx)
-                   {
-                       // Manejo específico de errores relacionados con la base de datos
+                   { 
                        return StatusCode(500, new 
                        { 
                            isSuccess = false, 
                            status = 500, 
                            message = "Ocurrió un error al acceder a la base de datos.", 
-                           error = dbEx.Message 
+                           error = dbEx.Message,
+                           innerError = dbEx.InnerException?.Message
                        });
                    }
+                   // Manejo de errores generales
                    catch (Exception ex)
                    {
-                       // Manejo de errores generales
                        return StatusCode(500, new 
                        { 
                            isSuccess = false, 
@@ -130,15 +129,17 @@ namespace Produccion_DB.Controllers
                                });
                            }
                            catch (DbUpdateException dbEx)
-                           {
+                           { 
                                return StatusCode(500, new 
                                { 
                                    isSuccess = false, 
                                    status = 500, 
-                                   message = "Error al acceder a la base de datos.", 
-                                   error = dbEx.Message 
+                                   message = "Ocurrió un error al acceder a la base de datos.", 
+                                   error = dbEx.Message,
+                                   innerError = dbEx.InnerException?.Message
                                });
                            }
+                           // Manejo de errores generales
                            catch (Exception ex)
                            {
                                return StatusCode(500, new 
@@ -194,6 +195,18 @@ namespace Produccion_DB.Controllers
                                    LotesPO = lotesPo 
                                });
                            }
+                           catch (DbUpdateException dbEx)
+                           { 
+                               return StatusCode(500, new 
+                               { 
+                                   isSuccess = false, 
+                                   status = 500, 
+                                   message = "Ocurrió un error al acceder a la base de datos.", 
+                                   error = dbEx.Message,
+                                   innerError = dbEx.InnerException?.Message
+                               });
+                           }
+                           // Manejo de errores generales
                            catch (Exception ex)
                            {
                                return StatusCode(500, new 
@@ -210,16 +223,6 @@ namespace Produccion_DB.Controllers
                        [HttpPost]
                        public async Task<IActionResult> Store([FromBody] LotesPoTb lotePo)
                        {
-                           if (lotePo == null)
-                           {
-                               return BadRequest(new 
-                               { 
-                                   isSuccess = false, 
-                                   status = 400, 
-                                   message = "Datos inválidos." 
-                               });
-                           }
-
                            try
                            {
                                await this.appDbContext.LotesPoTbs.AddAsync(lotePo);
@@ -234,15 +237,17 @@ namespace Produccion_DB.Controllers
                                });
                            }
                            catch (DbUpdateException dbEx)
-                           {
+                           { 
                                return StatusCode(500, new 
                                { 
                                    isSuccess = false, 
                                    status = 500, 
-                                   message = "Error al guardar en la base de datos.", 
-                                   error = dbEx.Message 
+                                   message = "Ocurrió un error al acceder a la base de datos.", 
+                                   error = dbEx.Message,
+                                   innerError = dbEx.InnerException?.Message
                                });
                            }
+                           // Manejo de errores generales
                            catch (Exception ex)
                            {
                                return StatusCode(500, new 
@@ -258,59 +263,115 @@ namespace Produccion_DB.Controllers
                        public async Task<IActionResult> Update(string temporada, int siembraNum,
                            string nombreLote,string aliasLote, [FromBody] LotesPoTb lotePO)
                        {
-                           var lote = await this.appDbContext.LotesPoTbs
-                               .FirstOrDefaultAsync(lPo => lPo.Temporada == temporada && lPo.SiembraNum == siembraNum && 
-                                                           lPo.NombreLote==nombreLote && lPo.AliasLote==aliasLote);
-            
-                           if (lote == null)
+                           try
                            {
-                               return NotFound(new { isSuccess = false, status = 404, message = "LotePO no encontrado." });
-                           }
+                               var lote = await this.appDbContext.LotesPoTbs
+                                   .FirstOrDefaultAsync(lPo =>
+                                       lPo.Temporada == temporada && lPo.SiembraNum == siembraNum &&
+                                       lPo.NombreLote == nombreLote && lPo.AliasLote == aliasLote);
 
-                           lote.Temporada = lotePO.Temporada;
-                           lote.SiembraNum = lotePO.SiembraNum;
-                           lote.NombreLote = lotePO.NombreLote;
-                           lote.AliasLote = lotePO.AliasLote;
-                           lote.FechaTrasplante = lotePO.FechaTrasplante;
-                           lote.Area = lotePO.Area;
-                           lote.Orientacion = lotePO.Orientacion;
-                           lote.Fumig = lotePO.Fumig;
-                           lote.TipoPlastico = lotePO.TipoPlastico;
-                           lote.Densidad = lotePO.Densidad;
-                           lote.ColmenasPorHa = lotePO.ColmenasPorHa;
-                           lote.ProgFertilizacion = lotePO.ProgFertilizacion;
-                           lote.ProgFitoProteccion = lotePO.ProgFitoProteccion;
-                           
-                           await this.appDbContext.SaveChangesAsync();
-                           return Ok(new
+                               if (lote == null)
+                               {
+                                   return NotFound(new
+                                       { isSuccess = false, status = 404, message = "LotePO no encontrado." });
+                               }
+
+                               lote.Temporada = lotePO.Temporada;
+                               lote.SiembraNum = lotePO.SiembraNum;
+                               lote.NombreLote = lotePO.NombreLote;
+                               lote.AliasLote = lotePO.AliasLote;
+                               lote.FechaTrasplante = lotePO.FechaTrasplante;
+                               lote.Area = lotePO.Area;
+                               lote.Orientacion = lotePO.Orientacion;
+                               lote.Fumig = lotePO.Fumig;
+                               lote.TipoPlastico = lotePO.TipoPlastico;
+                               lote.Densidad = lotePO.Densidad;
+                               lote.ColmenasPorHa = lotePO.ColmenasPorHa;
+                               lote.ProgFertilizacion = lotePO.ProgFertilizacion;
+                               lote.ProgFitoProteccion = lotePO.ProgFitoProteccion;
+
+                               await this.appDbContext.SaveChangesAsync();
+                               return Ok(new
+                               {
+                                   isSuccess = true, status = 200, message = "LotePO actualizado exitosamente.",
+                                   lotePO = lote
+                               });
+                           }  
+                           catch (DbUpdateException dbEx)
+                           { 
+                               return StatusCode(500, new 
+                               { 
+                                   isSuccess = false, 
+                                   status = 500, 
+                                   message = "Ocurrió un error al acceder a la base de datos.", 
+                                   error = dbEx.Message,
+                                   innerError = dbEx.InnerException?.Message
+                               });
+                           }
+                           // Manejo de errores generales
+                           catch (Exception ex)
                            {
-                               isSuccess = true, status = 200, message = "LotePO actualizado exitosamente.", lotePO = lote
-                           });
+                               return StatusCode(500, new 
+                               { 
+                                   isSuccess = false, 
+                                   status = 500, 
+                                   message = "Ocurrió un error inesperado.", 
+                                   error = ex.Message 
+                               });
+                           }
                        }
                        
                        [HttpDelete("{temporada}/{siembraNum}/{nombreLote}/{aliasLote}")]
                        public async Task<IActionResult> Destroy(string temporada, int siembraNum,string nombreLote,string aliasLote)
                        {
-                           var lotePo = await this.appDbContext.LotesPoTbs
-                               .FirstOrDefaultAsync(lPo => lPo.Temporada == temporada && lPo.SiembraNum == siembraNum && 
-                                                           lPo.NombreLote==nombreLote && lPo.AliasLote==aliasLote);
-            
-                           if (lotePo == null)
+                           try
                            {
-                               return NotFound(new { isSuccess = false, status = 404, message = "LotePO no encontrado." });
+                               var lotePo = await this.appDbContext.LotesPoTbs
+                                   .FirstOrDefaultAsync(lPo =>
+                                       lPo.Temporada == temporada && lPo.SiembraNum == siembraNum &&
+                                       lPo.NombreLote == nombreLote && lPo.AliasLote == aliasLote);
+
+                               if (lotePo == null)
+                               {
+                                   return NotFound(new
+                                       { isSuccess = false, status = 404, message = "LotePO no encontrado." });
+                               }
+
+                               this.appDbContext.LotesPoTbs.Remove(lotePo);
+                               await this.appDbContext.SaveChangesAsync();
+
+                               return Ok(new
+                                   { isSuccess = true, status = 200, message = "LotePO eliminado exitosamente." });
                            }
-            
-                           this.appDbContext.LotesPoTbs.Remove(lotePo);
-                           await this.appDbContext.SaveChangesAsync();
-            
-                           return Ok(new { isSuccess = true, status = 200, message = "LotePO eliminado exitosamente." });
+                           catch (DbUpdateException dbEx)
+                           { 
+                               return StatusCode(500, new 
+                               { 
+                                   isSuccess = false, 
+                                   status = 500, 
+                                   message = "Ocurrió un error al acceder a la base de datos.", 
+                                   error = dbEx.Message,
+                                   innerError = dbEx.InnerException?.Message
+                               });
+                           }
+                           // Manejo de errores generales
+                           catch (Exception ex)
+                           {
+                               return StatusCode(500, new 
+                               { 
+                                   isSuccess = false, 
+                                   status = 500, 
+                                   message = "Ocurrió un error inesperado.", 
+                                   error = ex.Message 
+                               });
+                           }
                        }
                        
                        
                        [HttpPost("CopiarLotesPo")]
                        public async Task<IActionResult> StoreBulk([FromBody] List<LotesPoTb> lotesPoList)
                        {
-                           if (lotesPoList == null || !lotesPoList.Any())
+                           if (lotesPoList.Count==0)
                            {
                                return BadRequest(new 
                                { 

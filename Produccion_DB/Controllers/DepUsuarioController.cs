@@ -22,15 +22,6 @@ namespace Produccion_DB.Controllers
         public async Task<IActionResult> Store([FromBody] DepUsuarioRequest request)
         
         {
-            if (request == null)
-            {
-                return BadRequest(new { isSuccess = false, message = "Solicitud inválida." });
-            }
-
-            if (string.IsNullOrEmpty(request.Usuario) || request.Departamentos == null || !request.Departamentos.Any())
-            {
-                return BadRequest(new { isSuccess = false, status = 400, message = "Datos inválidos. Usuario o departamentos no proporcionados." });
-            }
 
             try
             {
@@ -57,7 +48,9 @@ namespace Produccion_DB.Controllers
             }
             catch (DbUpdateException dbEx)
             {
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error al guardar en la base de datos.", error = dbEx.Message });
+                return StatusCode(500, new { isSuccess = false, status = 500, 
+                    message = "Error al guardar en la base de datos.", error = dbEx.Message,  
+                    innerError = dbEx.InnerException?.Message });
             }
             catch (Exception ex)
             {
@@ -71,11 +64,6 @@ namespace Produccion_DB.Controllers
         [HttpDelete]
         public async Task<IActionResult> Destroy([FromBody] DepUsuarioRequest request)
         {
-            if (string.IsNullOrEmpty(request.Usuario) || request.Departamentos == null || !request.Departamentos.Any())
-            {
-                return BadRequest(new { isSuccess = false, status = 400, message = "Datos inválidos. Usuario o departamentos no proporcionados." });
-            }
-
             try
             {
                 // Obtener las relaciones que se desean eliminar
@@ -83,7 +71,7 @@ namespace Produccion_DB.Controllers
                     .Where(du => du.Usuario == request.Usuario && request.Departamentos.Contains(du.Departamento))
                     .ToListAsync();
 
-                if (relaciones == null || !relaciones.Any())
+                if (relaciones.Count==0)
                 {
                     return NotFound(new { isSuccess = false, status = 404, message = "Relaciones no encontradas." });
                 }
@@ -107,11 +95,7 @@ namespace Produccion_DB.Controllers
 // Actualiza las relaciones entre un usuario y departamentos  
         [HttpPut("update")] 
 public async Task<IActionResult> Update([FromBody] DepUsuarioRequest request)  
-{  
-    if (request == null)  
-    {  
-        return BadRequest(new { isSuccess = false, message = "Solicitud inválida." });  
-    }  
+{   
 
     if (string.IsNullOrEmpty(request.Usuario) || request.Departamentos == null)  
     {  
@@ -184,17 +168,19 @@ public async Task<IActionResult> Update([FromBody] DepUsuarioRequest request)
                     })
                     .ToListAsync();
 
-                if (!departamentos.Any())
-                {
-                    return Ok(new { isSuccess = true, status = 204, message = "El usuario no tiene departamentos asignados.", departamentos = new List<object>() });
-                }
-
-                return Ok(new { isSuccess = true, status = 200, departamentos });
+             
+                return departamentos.Count==0 ? 
+                    Ok(new { isSuccess = true, status = 204, message = "El usuario no tiene departamentos asignados.", departamentos = new List<object>() }) 
+                    : Ok(new { isSuccess = true, status = 200, departamentos });
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error al obtener los departamentos.", error = ex.Message });
-            }
+            catch (DbUpdateException dbEx)  
+            {  
+                return StatusCode(500, new { isSuccess = false, status = 500, message = "Error al guardar en la base de datos.", error = dbEx.Message });  
+            }  
+            catch (Exception ex)  
+            {  
+                return StatusCode(500, new { isSuccess = false, status = 500, message = "Ocurrió un error inesperado.", error = ex.Message });  
+            } 
         }
 
     }
