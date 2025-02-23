@@ -178,23 +178,20 @@ namespace Produccion_DB.Controllers
             }
         }
 
-        [HttpPut("{temporada}/{departamento}/{siembraNumero}/{labor}")]
-        public async Task<IActionResult> Update(string temporada,string departamento, string labor, int siembraNumero,
+        [HttpPut("{temporada}/{departamento}/{siembraNumero}/{labor}/{aliasLabor}")]
+        public async Task<IActionResult> Update(string temporada,string departamento, string labor, int siembraNumero, string aliasLabor,
             [FromBody] LaborTTb laboresTemporada)
         {
             var laborT = await this.appDbContext.LaborTTbs
-                .FirstOrDefaultAsync(llabor => llabor.Temporada == temporada && llabor.Departamento == departamento && llabor.Labor == labor && llabor.SiembraNumero == siembraNumero);
+                .FirstOrDefaultAsync(llabor => llabor.Temporada == temporada && llabor.Departamento == departamento 
+                                                                             && llabor.Labor == labor && llabor.SiembraNumero == siembraNumero
+                                                                             && llabor.AliasLabor == aliasLabor);
             
             if (laborT == null)
             {
                 return NotFound(new { isSuccess = false, status = 404, message = "labor no encontrado." });
             }
-
-            laborT.Temporada = laboresTemporada.Temporada;
-            laborT.SiembraNumero = laboresTemporada.SiembraNumero;
-            laborT.Departamento = laboresTemporada.Departamento;
-            laborT.Labor = laboresTemporada.Labor;
-            laborT.AliasLabor = laboresTemporada.AliasLabor;
+            
             laborT.AplicarATodo = laboresTemporada.AplicarATodo;
             laborT.AplicarA = laboresTemporada.AplicarA;
             
@@ -205,11 +202,13 @@ namespace Produccion_DB.Controllers
             });
         }
 
-        [HttpDelete("{temporada}/{depatamento}/{labor}")]
-        public async Task<IActionResult> Destroy(string temporada, string depatamento, string labor)
+        [HttpDelete("{temporada}/{depatamento}/{labor}/{siembraNumero}/{aliasLabor}")]
+        public async Task<IActionResult> Destroy(string temporada, string depatamento, string labor, int siembraNumero, string aliasLabor )
         {
             var laborT = await this.appDbContext.LaborTTbs
-                .FirstOrDefaultAsync(lT =>lT.Temporada == temporada && lT.Departamento == depatamento && lT.Labor == labor);
+                .FirstOrDefaultAsync(lT =>lT.Temporada == temporada && lT.Departamento == depatamento 
+                                                                    && lT.Labor == labor && lT.SiembraNumero == siembraNumero 
+                                                                    && lT.AliasLabor == aliasLabor);
             
             if (laborT == null)
             {
