@@ -175,101 +175,42 @@ namespace Produccion_DB.Controllers
             }
         }
 
-        [HttpPut("{temporada}/{departamento}/{labor}")]
-        public async Task<IActionResult> Update(string temporada,string departamento, string labor,
+        [HttpPut("{temporada}/{departamento}/{siembraNumero}/{labor}/{aliasLabor}")]
+        public async Task<IActionResult> Update(string temporada,string departamento, int siembraNumero,string labor, string aliasLabor,
             [FromBody] LaborTTb laboresTemporada)
         {
-            try
+            var laborT = await this.appDbContext.LaborTTbs
+                .FirstOrDefaultAsync(llabor => llabor.Temporada == temporada && llabor.Departamento == departamento && llabor.Labor == labor 
+                                               && llabor.SiembraNumero == siembraNumero && llabor.AliasLabor == aliasLabor);
+            
+            if (laborT == null)
             {
-                var laborT = await this.appDbContext.LaborTTbs
-                    .FirstOrDefaultAsync(laborB =>
-                        laborB.Temporada == temporada && laborB.Departamento == departamento && laborB.Labor == labor);
-
-                if (laborT == null)
-                {
-                    return NotFound(new { isSuccess = false, status = 404, message = "labor no encontrado." });
-                }
-
-                laborT.Temporada = laboresTemporada.Temporada;
-                laborT.SiembraNumero = laboresTemporada.SiembraNumero;
-                laborT.Departamento = laboresTemporada.Departamento;
-                laborT.Labor = laboresTemporada.Labor;
-                laborT.AliasLabor = laboresTemporada.AliasLabor;
-                laborT.AplicarATodo = laboresTemporada.AplicarATodo;
-                laborT.AplicarA = laboresTemporada.AplicarA;
-
-                await this.appDbContext.SaveChangesAsync();
-                return Ok(new
-                {
-                    isSuccess = true, status = 200, message = "Labor actualizado exitosamente.",
-                    laboresTemporada = laborT
-                });
+                return NotFound(new { isSuccess = false, status = 404, message = "labor no encontrado." });
             }
-            catch (DbUpdateException dbEx)
-            { 
-                return StatusCode(500, new 
-                { 
-                    isSuccess = false, 
-                    status = 500, 
-                    message = "Ocurrió un error al acceder a la base de datos.", 
-                    error = dbEx.Message,
-                    innerError = dbEx.InnerException?.Message
-                });
-            }
-            // Manejo de errores generales
-            catch (Exception ex)
+            laborT.AplicarATodo = laboresTemporada.AplicarATodo;
+            laborT.AplicarA = laboresTemporada.AplicarA;
+            
+            await this.appDbContext.SaveChangesAsync();
+            return Ok(new
             {
-                return StatusCode(500, new 
-                { 
-                    isSuccess = false, 
-                    status = 500, 
-                    message = "Ocurrió un error inesperado.", 
-                    error = ex.Message 
-                });
-            }
+                isSuccess = true, status = 200, message = "Labor actualizado exitosamente.", laboresTemporada = laborT
+            });
         }
 
         [HttpDelete("{temporada}/{depatamento}/{labor}")]
         public async Task<IActionResult> Destroy(string temporada, string depatamento, string labor)
         {
-            try
+            var laborT = await this.appDbContext.LaborTTbs
+                .FirstOrDefaultAsync(lT =>lT.Temporada == temporada && lT.Departamento == depatamento && lT.Labor == labor);
+            
+            if (laborT == null)
             {
-                var laborT = await this.appDbContext.LaborTTbs
-                    .FirstOrDefaultAsync(lT =>
-                        lT.Temporada == temporada && lT.Departamento == depatamento && lT.Labor == labor);
-
-                if (laborT == null)
-                {
-                    return NotFound(new { isSuccess = false, status = 404, message = "labor no encontrado." });
-                }
-
-                this.appDbContext.LaborTTbs.Remove(laborT);
-                await this.appDbContext.SaveChangesAsync();
-
-                return Ok(new { isSuccess = true, status = 200, message = "LaborT eliminado exitosamente." });
+                return NotFound(new { isSuccess = false, status = 404, message = "labor no encontrado." });
             }
-            catch (DbUpdateException dbEx)
-            { 
-                return StatusCode(500, new 
-                { 
-                    isSuccess = false, 
-                    status = 500, 
-                    message = "Ocurrió un error al acceder a la base de datos.", 
-                    error = dbEx.Message,
-                    innerError = dbEx.InnerException?.Message
-                });
-            }
-            // Manejo de errores generales
-            catch (Exception ex)
-            {
-                return StatusCode(500, new 
-                { 
-                    isSuccess = false, 
-                    status = 500, 
-                    message = "Ocurrió un error inesperado.", 
-                    error = ex.Message 
-                });
-            }
+            this.appDbContext.LaborTTbs.Remove(laborT);
+            await this.appDbContext.SaveChangesAsync();
+            
+            return Ok(new { isSuccess = true, status = 200, message = "LaborT eliminado exitosamente." });
         } 
     }
 }
