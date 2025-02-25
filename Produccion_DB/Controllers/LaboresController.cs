@@ -146,8 +146,8 @@ namespace Produccion_DB.Controllers
         }
 
         // PUT api/<LaboresController>/5
-        [HttpPut("{id}/{departamento}/{descripcion}")]
-        public async Task<IActionResult> Update(string id, string departamento, string descripcion)
+        [HttpPut("{id}/{departamento}")]
+        public async Task<IActionResult> Update(string id, string departamento, [FromBody] LaboresTb newLabor)
         {
             try
             {
@@ -158,7 +158,7 @@ namespace Produccion_DB.Controllers
                     return NotFound(new { isSuccess = false, status = 404, message = "Labor no encontrado." });
                 }
 
-                labor.Descripcion = descripcion;
+                labor.Descripcion = newLabor.Descripcion;
 
                 await this.appDbContext.SaveChangesAsync();
 
