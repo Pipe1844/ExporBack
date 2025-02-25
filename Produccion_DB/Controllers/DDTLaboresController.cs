@@ -43,20 +43,27 @@ namespace Produccion_DB.Controllers;
             }
         }
         
-        [HttpGet("alias/{aliasLabor}")]
-        public async Task<IActionResult> GetByAliasLabor(string aliasLabor)
+        [HttpGet("departamento/{departamento}/labor/{labor}/alias/{aliasLabor}")]
+        public async Task<IActionResult> GetByDepartamentoLaborAlias(string departamento, string labor, string aliasLabor)
         {
             try
             {
                 var ddtLabores = await this.appDbContext.DdtLaborTbs
-                    .Where(l => l.AliasLabor == aliasLabor)
+                    .Where(l => l.Departamento == departamento && l.Labor == labor && l.AliasLabor == aliasLabor)
                     .Select(l => new { l.Ddt })
                     .ToListAsync();
-                Console.WriteLine($"Buscando registros con el alias: {aliasLabor}");
+
+                Console.WriteLine($"Buscando registros con Departamento: {departamento}, Labor: {labor}, AliasLabor: {aliasLabor}");
                 
-                if (!ddtLabores.Any())
+                if (ddtLabores.Count==0)
                 {
-                    return NotFound(new { isSuccess = false, status = 404, message = "No se encontraron registros con ese alias." });
+                    return Ok(new 
+                    { 
+                        isSuccess = false, 
+                        status = 204, 
+                        message = "DDTLabores no enontradas.",
+                        DdtLabores = new List<object>() 
+                    });
                 }
 
                 return Ok(new { isSuccess = true, status = 200, DDTLabores = ddtLabores });
@@ -66,6 +73,7 @@ namespace Produccion_DB.Controllers;
                 return StatusCode(500, new { isSuccess = false, status = 500, message = "Ocurrió un error inesperado.", error = ex.Message });
             }
         }
+
 
         [HttpGet("{temporada}/{departamento}/{labor}/{ddt}")]
         public async Task<IActionResult> Show(string temporada, string departamento, string labor, int ddt)
@@ -103,7 +111,20 @@ namespace Produccion_DB.Controllers;
 
             try
             {
-                
+                // Validación de duplicados
+                var existingDdtLabor = await this.appDbContext.DdtLaborTbs
+                    .FirstOrDefaultAsync(d => d.Temporada == ddtLabor.Temporada 
+                                              && d.SiembraNumero == ddtLabor.SiembraNumero
+                                              && d.Departamento == ddtLabor.Departamento
+                                              && d.Labor == ddtLabor.Labor
+                                              && d.AliasLabor == ddtLabor.AliasLabor
+                                              && d.Ddt == ddtLabor.Ddt);
+        
+                if (existingDdtLabor != null)  
+                {  
+                    return BadRequest(new { isSuccess = false, status = 400, message = "El DDT ya existe." });  
+                }
+
                 await this.appDbContext.DdtLaborTbs.AddAsync(ddtLabor);
                 await this.appDbContext.SaveChangesAsync();
 
@@ -114,6 +135,7 @@ namespace Produccion_DB.Controllers;
                 return StatusCode(500, new { isSuccess = false, status = 500, message = "Ocurrió un error inesperado.", error = ex.Message });
             }
         }
+
 
 
         [HttpPut("{temporada}/{departamento}/{siembraNumero}/{labor}/{aliasLabor}/{ddt}")]
@@ -134,9 +156,23 @@ namespace Produccion_DB.Controllers;
 
                 if (laborT == null)
                 {
-                    return NotFound(new { isSuccess = false, status = 404, message = "Labor no encontrada." });
+                    return NotFound(new { isSuccess = false, status = 404, message = "DDTLabor no encontrada." });
                 }
 
+                // Verificar si el DDT ya existe  
+                var existingDdt = await this.appDbContext.DdtLaborTbs  
+                    .FirstOrDefaultAsync(l => l.Ddt == ddtLabor.Ddt &&   
+                                              l.Temporada == temporada &&   
+                                              l.Departamento == departamento &&   
+                                              l.Labor == labor &&   
+                                              l.SiembraNumero == siembraNumero &&   
+                                              l.AliasLabor == aliasLabor);  
+
+                if (existingDdt != null)  
+                {  
+                    return BadRequest(new { isSuccess = false, status = 400, message = "Ddt ya existe." });  
+                }  
+                
                 // Crear una nueva instancia con el nuevo Ddt
                 var nuevaLabor = new DdtLaborTb
                 {
