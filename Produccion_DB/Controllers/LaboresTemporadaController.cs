@@ -99,8 +99,9 @@ namespace Produccion_DB.Controllers
                      return NotFound(new 
                      { 
                          isSuccess = false, 
-                         status = 404, 
-                         message = "labores no enontradas." 
+                         status = 204, 
+                         message = "labores no enontradas.",
+                         LaboresTemporada = new List<object>() 
                      });
                     }
                     return Ok(new 
