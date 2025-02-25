@@ -96,7 +96,7 @@ namespace Produccion_DB.Controllers
                      
                     if (laboresTemporada.Count==0)
                     {
-                     return NotFound(new 
+                     return Ok(new 
                      { 
                          isSuccess = false, 
                          status = 204, 
