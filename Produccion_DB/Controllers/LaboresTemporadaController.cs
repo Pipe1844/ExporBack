@@ -96,11 +96,12 @@ namespace Produccion_DB.Controllers
                      
                     if (laboresTemporada.Count==0)
                     {
-                     return NotFound(new 
+                     return Ok(new 
                      { 
                          isSuccess = false, 
-                         status = 404, 
-                         message = "labores no enontradas." 
+                         status = 204, 
+                         message = "labores no enontradas.",
+                         LaboresTemporada = new List<object>() 
                      });
                     }
                     return Ok(new 
