@@ -176,6 +176,52 @@ namespace Produccion_DB.Controllers
             }
         }
 
+        [HttpPost("CopiarLaboresT")]
+        public async Task<IActionResult> StoreBulk([FromBody] List<LaborTTb> laboresTList)
+        {
+            if (laboresTList.Count==0)
+            {
+                return BadRequest(new 
+                { 
+                    isSuccess = false, 
+                    status = 400, 
+                    message = "Datos inválidos o lista vacía." 
+                });
+            }
+
+            using (var transaction = await this.appDbContext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    // Agregar múltiples registros a la base de datos de una sola vez
+                    await this.appDbContext.LaborTTbs.AddRangeAsync(laboresTList);
+                    await this.appDbContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok(new 
+                    { 
+                        isSuccess = true, 
+                        status = 201, 
+                        message = "Labores por temporada creados con éxito.", 
+                        LaboresTemporada = laboresTList 
+                    });
+                }
+                              
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(500, new 
+                    { 
+                        isSuccess = false, 
+                        status = 500, 
+                        message = "Ocurrió un error inesperado.", 
+                        error = ex.Message,
+                        innerError = ex.InnerException?.Message
+                    });
+                }
+            }
+        }
+
         [HttpPut("{temporada}/{departamento}/{siembraNumero}/{labor}/{aliasLabor}")]
         public async Task<IActionResult> Update(string temporada,string departamento, int siembraNumero,string labor, string aliasLabor,
             [FromBody] LaborTTb laboresTemporada)
