@@ -280,7 +280,7 @@ public async Task<IActionResult> Destroy(string idProducto, string nombreCertifi
         public required string IdProducto { get; set; }  
         public required string NombreCertificacion { get; set; }  
         public required int DdtPrecosecha { get; set; } // Puedes cambiar esto a un valor por defecto si es apropiado  
-        public required string Comentarios { get; set; } 
+        public string? Comentarios { get; set; } 
 
     }
 }
