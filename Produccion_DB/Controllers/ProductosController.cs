@@ -66,6 +66,49 @@ namespace Produccion_DB.Controllers
                 });
             }
         }
+        
+        [HttpGet("asignar/para/ddt")]
+        public async Task<IActionResult> GetIdNameType()
+        {
+            try
+            {
+                var productos = await _appDbContext.ProductosTbs.
+                    Where(p=>p.Activo==true).
+                    Select(p =>new
+                    {
+                        p.IdProducto,
+                        p.NombreDescriptivo,
+                        p.TipoUso
+                    })
+                    .ToListAsync();
+
+                return productos.Count==0 ? 
+                    Ok(new { isSuccess = true, status = 204, Productos = new List<object>() }) : 
+                    Ok(new { isSuccess = true, status = 200, Productos = productos });
+            }
+            catch (DbUpdateException dbEx)
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
+            }
+            // Manejo de errores generales
+            catch (Exception ex)
+            {
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
+            }
+        }
 
         // GET: api/v2/productos/{id}
         [HttpGet("{id}")]
