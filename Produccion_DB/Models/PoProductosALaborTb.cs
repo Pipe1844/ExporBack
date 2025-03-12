@@ -29,7 +29,7 @@ public partial class PoProductosALaborTb
 
     public double HorasLavado { get; set; }
 
-    public virtual DdtLaborTb DdtLaborTb { get; set; } = null!;
+    //public virtual DdtLaborTb DdtLaborTb { get; set; } = null!;
 
-    public virtual ProductosTb IdProductoNavigation { get; set; } = null!;
+    //public virtual ProductosTb IdProductoNavigation { get; set; } = null!;
 }

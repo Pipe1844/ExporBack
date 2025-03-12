@@ -2327,6 +2327,7 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("Nombre_Descriptivo");
 
+            /*
             entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.PoProductosALaborTbs)
                 .HasForeignKey(d => d.IdProducto)
                 .HasConstraintName("RefProductos_TB116");
@@ -2334,6 +2335,7 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.DdtLaborTb).WithMany(p => p.PoProductosALaborTbs)
                 .HasForeignKey(d => new { d.Temporada, d.SiembraNumero, d.Departamento, d.Labor, d.AliasLabor, d.Ddt })
                 .HasConstraintName("RefDDT_Labor_TB117");
+            */
         });
 
         modelBuilder.Entity<ProductosTb>(entity =>
