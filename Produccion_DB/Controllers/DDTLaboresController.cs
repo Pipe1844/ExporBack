@@ -82,6 +82,7 @@ namespace Produccion_DB.Controllers;
                 var departamento = "RIEGO Y DRENAJE";
                 var ddtLabores = await this.appDbContext.DdtLaborTbs
                     .Where(l => l.Temporada == temporada && l.Departamento == departamento && l.Labor == labor )
+                    .OrderBy(l => l.Ddt)
                     .Select(l => new { l.Ddt, l.SiembraNumero })
                     .ToListAsync();
 
