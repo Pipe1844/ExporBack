@@ -121,6 +121,55 @@ namespace Produccion_DB.Controllers;
                 });
             }
         }
+        
+        [HttpGet("{temporada}/labor/departamento/riego")]
+        public async Task<IActionResult> GetLaboresByDepartamento(string temporada)
+        {
+            try
+            {
+                var depart = "RIEGO Y DRENAJE";
+                var ddtLabores = await this.appDbContext.DdtLaborTbs
+                    .Where(l => l.Temporada == temporada && l.Departamento == depart )
+                    .Select(l => new { l.Labor })
+                    .Distinct()
+                    .ToListAsync();
+
+                if (ddtLabores.Count==0)
+                {
+                    return Ok(new 
+                    { 
+                        isSuccess = true, 
+                        status = 204, 
+                        message = "Sin registros.",
+                        DdtLabores = new List<object>() 
+                    });
+                }
+
+                return Ok(new { isSuccess = true, status = 200, DDTLabores = ddtLabores });
+            }
+            catch (DbUpdateException dbEx)
+            { 
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error al acceder a la base de datos.", 
+                    error = dbEx.Message,
+                    innerError = dbEx.InnerException?.Message
+                });
+            }
+            // Manejo de errores generales
+            catch (Exception ex)
+            {
+                return StatusCode(500, new 
+                { 
+                    isSuccess = false, 
+                    status = 500, 
+                    message = "Ocurrió un error inesperado.", 
+                    error = ex.Message 
+                });
+            }
+        }
 
 
         [HttpGet("{temporada}/{departamento}/{labor}/{ddt}")]
