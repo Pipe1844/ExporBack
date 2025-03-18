@@ -25,23 +25,30 @@ namespace Produccion_DB.Controllers
 
             try
             {
-                // Verificar que el usuario exista
-                var usuarioExiste = await _appDbContext.UsuarioTbs
-                    .AnyAsync(u => u.Usuario == request.Usuario);
+                // Verificar que el usuario exista  
+                var usuarioExiste = await _appDbContext.UsuarioTbs  
+                    .AnyAsync(u => u.Usuario == request.Usuario);  
 
-                if (!usuarioExiste)
-                {
-                    return NotFound(new { isSuccess = false, status = 404, message = "Usuario no encontrado.", request = request });
-                }
+                if (!usuarioExiste)  
+                {  
+                    return NotFound(new { isSuccess = false, status = 404, message = "Usuario no encontrado.", request = request });  
+                }  
 
-                // Crear las relaciones con los departamentos
-                var relaciones = request.Departamentos.Select(dept => new DepUsuarioTb
-                {
-                    Usuario = request.Usuario,
-                    Departamento = dept
-                });
+// Comprobar los datos antes de proceder  
+                if (string.IsNullOrEmpty(request.Usuario) || request.Departamentos == null)  
+                {  
+                    return BadRequest(new { isSuccess = false, status = 400, message = "Datos inválidos. Usuario o departamentos no proporcionados." });  
+                }  
 
-                await _appDbContext.DepUsuarioTBs.AddRangeAsync(relaciones);
+// Crear las relaciones con los departamentos  
+                var relaciones = request.Departamentos.Select(dept => new DepUsuarioTb  
+                {  
+                    Usuario = request.Usuario,  
+                    Departamento = dept  
+                });  
+
+// Agregar las relaciones y guardar  
+                await _appDbContext.DepUsuarioTBs.AddRangeAsync(relaciones);  
                 await _appDbContext.SaveChangesAsync();
 
                 return Ok(new { isSuccess = true, status = 201, message = "Departamentos asociados al usuario exitosamente." });
@@ -66,16 +73,26 @@ namespace Produccion_DB.Controllers
         {
             try
             {
+                if (string.IsNullOrEmpty(request.Usuario) || request.Departamentos == null || !request.Departamentos.Any())
+                {
+                    return BadRequest(new { isSuccess = false, status = 400, message = "Datos inválidos. Usuario o departamentos no proporcionados." });
+                }
+                
                 // Obtener las relaciones que se desean eliminar
                 var relaciones = await _appDbContext.DepUsuarioTBs
                     .Where(du => du.Usuario == request.Usuario && request.Departamentos.Contains(du.Departamento))
                     .ToListAsync();
 
+                if (string.IsNullOrEmpty(request.Usuario) || request.Departamentos == null)
+                {
+                    return BadRequest(new { isSuccess = false, status = 400, message = "Datos inválidos. Usuario o departamentos no proporcionados." });
+                }
+                
                 if (relaciones.Count==0)
                 {
                     return NotFound(new { isSuccess = false, status = 404, message = "Relaciones no encontradas." });
                 }
-
+                
                 _appDbContext.DepUsuarioTBs.RemoveRange(relaciones);
                 await _appDbContext.SaveChangesAsync();
 
