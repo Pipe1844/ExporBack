@@ -37,8 +37,8 @@ namespace Produccion_DB.Controllers;
                 }).ToListAsync();
 
                 return poProductosLabor.Count==0 ? 
-                    Ok(new { isSuccess = true, status = 204, DDTLabores = new List<object>() }) :
-                    Ok(new { isSuccess = true, status = 200, DDTLabores = poProductosLabor });
+                    Ok(new { isSuccess = true, status = 204, poProductosLabor = new List<object>() }) :
+                    Ok(new { isSuccess = true, status = 200, poProductosLabor });
             }
             catch (DbUpdateException dbEx)
             { 
