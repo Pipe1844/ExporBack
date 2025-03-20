@@ -83,7 +83,7 @@ namespace Produccion_DB.Controllers;
                 var ddtLabores = await this.appDbContext.DdtLaborTbs
                     .Where(l => l.Temporada == temporada && l.Departamento == departamento && l.Labor == labor )
                     .OrderBy(l => l.Ddt)
-                    .Select(l => new { l.Ddt, l.SiembraNumero })
+                    .Select(l => new { l.Temporada,l.Departamento,l.Labor,l.AliasLabor, l.Ddt, l.SiembraNumero })
                     .ToListAsync();
 
                 if (ddtLabores.Count==0)
