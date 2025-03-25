@@ -74,14 +74,14 @@ namespace Produccion_DB.Controllers;
             }
         }
         
-        [HttpGet("{temporada}/{labor}")]
-        public async Task<IActionResult> GetByTemporadaLaborDepartRiego(string temporada, string labor)
+        [HttpGet("{temporada}/{alias}")]
+        public async Task<IActionResult> GetByTemporadaAliasLabor(string temporada, string alias)
         {
             try
             {
                 var departamento = "RIEGO Y DRENAJE";
                 var ddtLabores = await this.appDbContext.DdtLaborTbs
-                    .Where(l => l.Temporada == temporada && l.Departamento == departamento && l.Labor == labor )
+                    .Where(l => l.Temporada == temporada && l.Departamento == departamento && l.AliasLabor == alias )
                     .OrderBy(l => l.Ddt)
                     .Select(l => new { l.Temporada,l.Departamento,l.Labor,l.AliasLabor, l.Ddt, l.SiembraNumero })
                     .ToListAsync();
@@ -124,14 +124,14 @@ namespace Produccion_DB.Controllers;
         }
         
         [HttpGet("{temporada}/labor/departamento/riego")]
-        public async Task<IActionResult> GetLaboresByDepartamento(string temporada)
+        public async Task<IActionResult> GetAliasByDepartamento(string temporada)
         {
             try
             {
                 var depart = "RIEGO Y DRENAJE";
                 var ddtLabores = await this.appDbContext.DdtLaborTbs
                     .Where(l => l.Temporada == temporada && l.Departamento == depart )
-                    .Select(l => new { l.Labor })
+                    .Select(l => new { l.AliasLabor })
                     .Distinct()
                     .ToListAsync();
 
