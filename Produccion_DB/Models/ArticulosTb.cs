@@ -25,7 +25,7 @@ public partial class ArticulosTb
 
     public string? Observaciones { get; set; }
 
-    public virtual ICollection<FtAplicacionesTb> FtAplicacionesTbIdSprayNavigations { get; set; } = new List<FtAplicacionesTb>();
+    //public virtual ICollection<FtAplicacionesTb> FtAplicacionesTbIdSprayNavigations { get; set; } = new List<FtAplicacionesTb>();
 
-    public virtual ICollection<FtAplicacionesTb> FtAplicacionesTbIdTractorNavigations { get; set; } = new List<FtAplicacionesTb>();
+    //public virtual ICollection<FtAplicacionesTb> FtAplicacionesTbIdTractorNavigations { get; set; } = new List<FtAplicacionesTb>();
 }

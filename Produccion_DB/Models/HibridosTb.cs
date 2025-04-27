@@ -19,11 +19,11 @@ public partial class HibridosTb
 
     public bool? Activo { get; set; }
 
-    public virtual ICollection<HibridosPoTb> HibridosPoTbs { get; set; } = new List<HibridosPoTb>();
+    //public virtual ICollection<HibridosPoTb> HibridosPoTbs { get; set; } = new List<HibridosPoTb>();
 
-    public virtual ICollection<KnLotesCanaTb> KnLotesCanaTbs { get; set; } = new List<KnLotesCanaTb>();
+    //public virtual ICollection<KnLotesCanaTb> KnLotesCanaTbs { get; set; } = new List<KnLotesCanaTb>();
 
    // public virtual VariedadTb VariedadTb { get; set; } = null!;
 
-    public virtual ICollection<VvLotesSemillaTb> VvLotesSemillaTbs { get; set; } = new List<VvLotesSemillaTb>();
+    //public virtual ICollection<VvLotesSemillaTb> VvLotesSemillaTbs { get; set; } = new List<VvLotesSemillaTb>();
 }

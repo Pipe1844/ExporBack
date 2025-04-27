@@ -15,9 +15,9 @@ public partial class UsuarioTb
 
     public string IdEmpleado { get; set; } = null!;
 
-    public virtual ICollection<ControlUsuarioTb> ControlUsuarioTbs { get; set; } = new List<ControlUsuarioTb>();
+    //public virtual ICollection<ControlUsuarioTb> ControlUsuarioTbs { get; set; } = new List<ControlUsuarioTb>();
 
-    public virtual ICollection<DepUsuarioTb> DepUsuarios { get; set; } = new List<DepUsuarioTb>();
+    //public virtual ICollection<DepUsuarioTb> DepUsuarios { get; set; } = new List<DepUsuarioTb>();
     
     //public virtual ICollection<DepartamentoTb> Departamentos { get; set; } = new List<DepartamentoTb>();
 }
