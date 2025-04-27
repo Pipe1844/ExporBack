@@ -37,8 +37,8 @@ namespace Produccion_DB.Controllers;
                 }).ToListAsync();
 
                 return poProductosLabor.Count==0 ? 
-                    Ok(new { isSuccess = true, status = 204, DDTLabores = new List<object>() }) :
-                    Ok(new { isSuccess = true, status = 200, DDTLabores = poProductosLabor });
+                    Ok(new { isSuccess = true, status = 204, poProductosLabor = new List<object>() }) :
+                    Ok(new { isSuccess = true, status = 200, poProductosLabor });
             }
             catch (DbUpdateException dbEx)
             { 
@@ -71,6 +71,7 @@ namespace Produccion_DB.Controllers;
         {
             try
             {
+                var departament = "RIEGO Y DRENAJE";
                 var poProductosLabor = await appDbContext.PoProductosALaborTbs
                     .Where(l => l.Temporada == temporada && l.SiembraNumero==siembraNum &&
                                 l.Departamento == departamento && l.Labor == labor && l.AliasLabor==aliasLabor 
@@ -125,6 +126,7 @@ namespace Produccion_DB.Controllers;
         {
             try
             {
+                /*
                 // Validación de duplicados
                 var existingpoProductosLabor = await this.appDbContext.PoProductosALaborTbs
                     .FirstOrDefaultAsync(p => p.Temporada == poProductosLabor.Temporada 
@@ -139,6 +141,7 @@ namespace Produccion_DB.Controllers;
                 {  
                     return BadRequest(new { isSuccess = false, status = 400, message = "El poProductosLabor ya existe." });  
                 }
+                */
 
                 await this.appDbContext.PoProductosALaborTbs.AddAsync(poProductosLabor);
                 await this.appDbContext.SaveChangesAsync();
