@@ -327,4 +327,31 @@ namespace Produccion_DB.Controllers;
             return Ok(new { isSuccess = true, status = 200, message = "Labor DDT eliminada exitosamente." });
         }
 
+        [HttpGet("{fechaActual}/{fechaInicio}/{fechaFinal}")]
+        public async Task<IActionResult> FilterDDTAndLote(string fechaActual, string fechaInicio, string fechaFinal)
+        {
+            var data = await appDbContext.DdtLaborTbs
+                .Join(
+                    appDbContext.LotesPoTbs,
+                    d => new { d.Temporada, Siembra = d.SiembraNumero },
+                    l => new { l.Temporada, Siembra = l.SiembraNum },
+                    (d, l) => new
+                    {
+                        // Proyección anónima; aquí pones lo que necesites exponer
+                        Temporada        = d.Temporada,
+                        SiembraNumero    = d.SiembraNumero,
+                        Departamento     = d.Departamento,
+                        Labor            = d.Labor,
+                        AliasLabor       = d.AliasLabor,
+
+                        NombreLote       = l.NombreLote,
+                        FechaTrasplante  = l.FechaTrasplante,
+                        Area             = l.Area,
+                        // …etc.
+                    }
+                )
+                .ToListAsync();
+            
+            return Ok(new {isSucces = true, status = 200, message = "a"});
+        }
     }
