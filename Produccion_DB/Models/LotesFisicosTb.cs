@@ -13,13 +13,13 @@ public partial class LotesFisicosTb
 
     public string? Descripcion { get; set; }
 
-    public virtual ICollection<CamasLotesFisicosTb> CamasLotesFisicosTbs { get; set; } = new List<CamasLotesFisicosTb>();
+    //public virtual ICollection<CamasLotesFisicosTb> CamasLotesFisicosTbs { get; set; } = new List<CamasLotesFisicosTb>();
 
-    public virtual ICollection<CentroCostoTb> CentroCostoTbs { get; set; } = new List<CentroCostoTb>();
+    //public virtual ICollection<CentroCostoTb> CentroCostoTbs { get; set; } = new List<CentroCostoTb>();
 
-    public virtual ICollection<KnLotesCanaTb> KnLotesCanaTbs { get; set; } = new List<KnLotesCanaTb>();
+    //public virtual ICollection<KnLotesCanaTb> KnLotesCanaTbs { get; set; } = new List<KnLotesCanaTb>();
 
-    public virtual ICollection<LotesPoTb> LotesPoTbs { get; set; } = new List<LotesPoTb>();
+    //public virtual ICollection<LotesPoTb> LotesPoTbs { get; set; } = new List<LotesPoTb>();
 
-    public virtual ICollection<ValvulasTb> ValvulasTbs { get; set; } = new List<ValvulasTb>();
+    //public virtual ICollection<ValvulasTb> ValvulasTbs { get; set; } = new List<ValvulasTb>();
 }

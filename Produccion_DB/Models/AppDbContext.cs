@@ -275,9 +275,9 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("Nombre_Lote");
             entity.Property(e => e.NumeroCama).HasColumnName("Numero_Cama");
 
-            entity.HasOne(d => d.NombreLoteNavigation).WithMany(p => p.CamasLotesFisicosTbs)
+            /*entity.HasOne(d => d.NombreLoteNavigation).WithMany(p => p.CamasLotesFisicosTbs)
                 .HasForeignKey(d => d.NombreLote)
-                .HasConstraintName("RefLotes_Fisicos_TB217");
+                .HasConstraintName("RefLotes_Fisicos_TB217");*/
         });
 
         modelBuilder.Entity<CamasLotesPoTb>(entity =>
@@ -302,9 +302,9 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("Alias_Lote");
             entity.Property(e => e.NumeroCama).HasColumnName("Numero_Cama");
 
-            entity.HasOne(d => d.LotesPoTb).WithMany(p => p.CamasLotesPoTbs)
+            /*entity.HasOne(d => d.LotesPoTb).WithMany(p => p.CamasLotesPoTbs)
                 .HasForeignKey(d => new { d.Temporada, d.SiembraNum, d.NombreLote, d.AliasLote })
-                .HasConstraintName("RefLotes_PO_TB85");
+                .HasConstraintName("RefLotes_PO_TB85");*/
         });
 
         modelBuilder.Entity<CentroCostoTb>(entity =>
@@ -331,10 +331,10 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(500)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.NombreLoteNavigation).WithMany(p => p.CentroCostoTbs)
+            /*entity.HasOne(d => d.NombreLoteNavigation).WithMany(p => p.CentroCostoTbs)
                 .HasForeignKey(d => d.NombreLote)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefLotes_Fisicos_TB11");
+                .HasConstraintName("RefLotes_Fisicos_TB11");*/
         });
 
         modelBuilder.Entity<CertificacionesTb>(entity =>
@@ -358,9 +358,9 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.DdtPrecosecha).HasColumnName("Ddt_Precosecha");
 
-            entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.CertificacionesTbs)
+            /*entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.CertificacionesTbs)
                 .HasForeignKey(d => d.IdProducto)
-                .HasConstraintName("RefProductos_TB121");
+                .HasConstraintName("RefProductos_TB121");*/
         });
 
         modelBuilder.Entity<CodigosTrazabilidadTb>(entity =>
@@ -411,10 +411,10 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(500)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.DepartamentoNavigation).WithMany(p => p.ConsultasTbs)
+            /*entity.HasOne(d => d.DepartamentoNavigation).WithMany(p => p.ConsultasTbs)
                 .HasForeignKey(d => d.Departamento)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefDepartamento_TB163");
+                .HasConstraintName("RefDepartamento_TB163");*/
         });
 
         modelBuilder.Entity<ControlUsuarioTb>(entity =>
@@ -433,9 +433,9 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.UsuarioNavigation).WithMany(p => p.ControlUsuarioTbs)
+            /*entity.HasOne(d => d.UsuarioNavigation).WithMany(p => p.ControlUsuarioTbs)
                 .HasForeignKey(d => d.Usuario)
-                .HasConstraintName("RefUsuario_TB203");
+                .HasConstraintName("RefUsuario_TB203");*/
         });
 
         modelBuilder.Entity<CultivoProductoFaseTb>(entity =>
@@ -482,15 +482,15 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("Alias_Labor");
 
-            entity.HasOne(d => d.TemporadaNavigation).WithMany(p => p.DdtLaborTbs)
+            /*entity.HasOne(d => d.TemporadaNavigation).WithMany(p => p.DdtLaborTbs)
                 .HasForeignKey(d => d.Temporada)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefTemporada_TB81");
+                .HasConstraintName("RefTemporada_TB81");*/
 
-            entity.HasOne(d => d.LaborTTb).WithMany(p => p.DdtLaborTbs)
+            /*entity.HasOne(d => d.LaborTTb).WithMany(p => p.DdtLaborTbs)
                 .HasForeignKey(d => new { d.Temporada, d.SiembraNumero, d.Departamento, d.Labor, d.AliasLabor })
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefLabor_T_TB52");
+                .HasConstraintName("RefLabor_T_TB52");*/
         });
         
         modelBuilder.Entity<DepUsuarioTb>(entity =>
@@ -509,17 +509,17 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
             //
-            entity.HasOne(e => e.UsuarioTb)
+            /*entity.HasOne(e => e.UsuarioTb)
                 .WithMany(u => u.DepUsuarios)
                 .HasForeignKey(e => e.Usuario)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefUsuario_TB104");
+                .HasConstraintName("RefUsuario_TB104");*/
 
-            entity.HasOne(e => e.DepartamentoTb)
+            /*entity.HasOne(e => e.DepartamentoTb)
                 .WithMany(d => d.DepUsuarios)
                 .HasForeignKey(e => e.Departamento)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefDepartamento_TB105");
+                .HasConstraintName("RefDepartamento_TB105");*/
 
             /*
             entity.Property(e => e.FechaAsignacion).HasColumnName("Fecha_Asignacion");
@@ -560,12 +560,12 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Encargado)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            //
-            entity.HasMany(e => e.DepUsuarios)
+            
+            /*entity.HasMany(e => e.DepUsuarios)
                 .WithOne(e => e.DepartamentoTb)
                 .HasForeignKey(e => e.Departamento)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefDepartamento_TB105");
+                .HasConstraintName("RefDepartamento_TB105");*/
         });    
 
         modelBuilder.Entity<EntregaProductoTb>(entity =>
@@ -625,10 +625,10 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.TemporadaNavigation).WithMany(p => p.EstRangosPesosTbs)
+            /*entity.HasOne(d => d.TemporadaNavigation).WithMany(p => p.EstRangosPesosTbs)
                 .HasForeignKey(d => d.Temporada)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefTemporada_TB209");
+                .HasConstraintName("RefTemporada_TB209");*/
         });
 
         modelBuilder.Entity<EstSemanaTb>(entity =>
@@ -646,10 +646,10 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.FechaFin).HasColumnName("Fecha_Fin");
             entity.Property(e => e.FechaInicio).HasColumnName("Fecha_Inicio");
 
-            entity.HasOne(d => d.TemporadaNavigation).WithMany(p => p.EstSemanaTbs)
+            /*entity.HasOne(d => d.TemporadaNavigation).WithMany(p => p.EstSemanaTbs)
                 .HasForeignKey(d => d.Temporada)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefTemporada_TB206");
+                .HasConstraintName("RefTemporada_TB206");*/
         });
 
         modelBuilder.Entity<FechaTb>(entity =>
@@ -731,23 +731,23 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.PresionSpray).HasColumnName("Presion_Spray");
             entity.Property(e => e.Rpm).HasColumnName("RPM");
 
-            entity.HasOne(d => d.IdSprayNavigation).WithMany(p => p.FtAplicacionesTbIdSprayNavigations)
+            /*entity.HasOne(d => d.IdSprayNavigation).WithMany(p => p.FtAplicacionesTbIdSprayNavigations)
                 .HasForeignKey(d => d.IdSpray)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefArticulos_TB201");
+                .HasConstraintName("RefArticulos_TB201");*/
 
             entity.HasOne(d => d.IdTaplicacionNavigation).WithMany(p => p.FtAplicacionesTbs)
                 .HasForeignKey(d => d.IdTaplicacion)
                 .HasConstraintName("RefFT_Turno_Aplicacion_TB190");
 
-            entity.HasOne(d => d.IdTractorNavigation).WithMany(p => p.FtAplicacionesTbIdTractorNavigations)
+            /*entity.HasOne(d => d.IdTractorNavigation).WithMany(p => p.FtAplicacionesTbIdTractorNavigations)
                 .HasForeignKey(d => d.IdTractor)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefArticulos_TB199");
+                .HasConstraintName("RefArticulos_TB199");*/
 
-            entity.HasOne(d => d.LotesPoTb).WithMany(p => p.FtAplicacionesTbs)
+            /*entity.HasOne(d => d.LotesPoTb).WithMany(p => p.FtAplicacionesTbs)
                 .HasForeignKey(d => new { d.Temporada, d.SiembraNum, d.NombreLote, d.AliasLote })
-                .HasConstraintName("RefLotes_PO_TB188");
+                .HasConstraintName("RefLotes_PO_TB188");*/
         });
 
         modelBuilder.Entity<FtApruebaProductoTb>(entity =>
@@ -1029,10 +1029,10 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("Nombre_Descriptivo");
             entity.Property(e => e.UnidadesPorLote).HasColumnName("Unidades_Por_Lote");
 
-            entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.FtPedidoProductosTbs)
+            /*entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.FtPedidoProductosTbs)
                 .HasForeignKey(d => d.IdProducto)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefProductos_TB182");
+                .HasConstraintName("RefProductos_TB182");*/
 
             entity.HasOne(d => d.NumBoletaNavigation).WithMany(p => p.FtPedidoProductosTbs)
                 .HasForeignKey(d => d.NumBoleta)
@@ -1183,20 +1183,20 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("Alias_Hibrido");
 
-            entity.HasOne(d => d.TemporadaNavigation).WithMany(p => p.HibridosPoTbs)
+            /*entity.HasOne(d => d.TemporadaNavigation).WithMany(p => p.HibridosPoTbs)
                 .HasForeignKey(d => d.Temporada)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefTemporada_TB29");
+                .HasConstraintName("RefTemporada_TB29");*/
 
-            entity.HasOne(d => d.VariedadTb).WithMany(p => p.HibridosPoTbs)
+            /*entity.HasOne(d => d.VariedadTb).WithMany(p => p.HibridosPoTbs)
                 .HasForeignKey(d => new { d.Cultivo, d.Variedad })
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefVariedad_TB49");
+                .HasConstraintName("RefVariedad_TB49");*/
 
-            entity.HasOne(d => d.HibridosTb).WithMany(p => p.HibridosPoTbs)
+            /*entity.HasOne(d => d.HibridosTb).WithMany(p => p.HibridosPoTbs)
                 .HasForeignKey(d => new { d.Cultivo, d.Variedad, d.Hibrido })
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefHibridos_TB19");
+                .HasConstraintName("RefHibridos_TB19");*/
         });
 
         modelBuilder.Entity<HibridosTb>(entity =>
@@ -1386,14 +1386,14 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.FechaFin).HasColumnName("Fecha_Fin");
             entity.Property(e => e.FechaInicio).HasColumnName("Fecha_Inicio");
 
-            entity.HasOne(d => d.DepartamentoNavigation).WithMany(p => p.KnLaboresLotesTbs)
+            /*entity.HasOne(d => d.DepartamentoNavigation).WithMany(p => p.KnLaboresLotesTbs)
                 .HasForeignKey(d => d.Departamento)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefDepartamento_TB146");
+                .HasConstraintName("RefDepartamento_TB146");*/
 
-            entity.HasOne(d => d.LaboresTb).WithMany(p => p.KnLaboresLotesTbs)
+            /*entity.HasOne(d => d.LaboresTb).WithMany(p => p.KnLaboresLotesTbs)
                 .HasForeignKey(d => new { d.Labor, d.Departamento })
-                .HasConstraintName("RefLabores_TB142");
+                .HasConstraintName("RefLabores_TB142");*/
         });
 
         modelBuilder.Entity<KnLotesCanaTb>(entity =>
@@ -1429,15 +1429,15 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.Renovado).HasDefaultValue(false);
 
-            entity.HasOne(d => d.NombreLoteNavigation).WithMany(p => p.KnLotesCanaTbs)
+            /*entity.HasOne(d => d.NombreLoteNavigation).WithMany(p => p.KnLotesCanaTbs)
                 .HasForeignKey(d => d.NombreLote)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefLotes_Fisicos_TB125");
+                .HasConstraintName("RefLotes_Fisicos_TB125");*/
 
-            entity.HasOne(d => d.HibridosTb).WithMany(p => p.KnLotesCanaTbs)
+            /*entity.HasOne(d => d.HibridosTb).WithMany(p => p.KnLotesCanaTbs)
                 .HasForeignKey(d => new { d.Cultivo, d.Variedad, d.Hibrido })
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefHibridos_TB129");
+                .HasConstraintName("RefHibridos_TB129");*/
         });
 
         modelBuilder.Entity<KnPesoCarretasTb>(entity =>
@@ -1650,10 +1650,10 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.UnidadesPorLote).HasColumnName("Unidades_Por_Lote");
 
-            entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.KnPoPedidoProductosTbs)
+            /*entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.KnPoPedidoProductosTbs)
                 .HasForeignKey(d => d.IdProducto)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefProductos_TB153");
+                .HasConstraintName("RefProductos_TB153");*/
         });
 
         modelBuilder.Entity<KnProductosALaborTb>(entity =>
@@ -1689,9 +1689,9 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("Nombre_Descriptivo");
 
-            entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.KnProductosALaborTbs)
+            /*entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.KnProductosALaborTbs)
                 .HasForeignKey(d => d.IdProducto)
-                .HasConstraintName("RefProductos_TB149");
+                .HasConstraintName("RefProductos_TB149");*/
 
             entity.HasOne(d => d.KnDdtLaborTb).WithMany(p => p.KnProductosALaborTbs)
                 .HasForeignKey(d => new { d.Departamento, d.Labor, d.AliasLabor, d.Ddt })
@@ -1945,9 +1945,9 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(500)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.LotesPoTb).WithOne(p => p.LcTrasplanteLoteTb)
+            /*entity.HasOne(d => d.LotesPoTb).WithOne(p => p.LcTrasplanteLoteTb)
                 .HasForeignKey<LcTrasplanteLoteTb>(d => new { d.Temporada, d.SiembraNum, d.NombreLote, d.AliasLote })
-                .HasConstraintName("RefLotes_PO_TB246");
+                .HasConstraintName("RefLotes_PO_TB246");*/
         });
 
         modelBuilder.Entity<LcVvTrasplanteSalidaViveroTb>(entity =>
@@ -2120,15 +2120,15 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("Alias_Hibrido");
             entity.Property(e => e.AreaVariedad).HasColumnName("Area_Variedad");
 
-            entity.HasOne(d => d.TemporadaNavigation).WithMany(p => p.LvTermporadaTbs)
+            /*entity.HasOne(d => d.TemporadaNavigation).WithMany(p => p.LvTermporadaTbs)
                 .HasForeignKey(d => d.Temporada)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefTemporada_TB62");
+                .HasConstraintName("RefTemporada_TB62");*/
 
-            entity.HasOne(d => d.LotesPoTb).WithMany(p => p.LvTermporadaTbs)
+            /*entity.HasOne(d => d.LotesPoTb).WithMany(p => p.LvTermporadaTbs)
                 .HasForeignKey(d => new { d.Temporada, d.SiembraNum, d.NombreLote, d.AliasLote })
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefLotes_PO_TB93");
+                .HasConstraintName("RefLotes_PO_TB93");*/
 
             entity.HasOne(d => d.HibridosPoTb).WithMany(p => p.LvTermporadaTbs)
                 .HasForeignKey(d => new { d.Temporada, d.Tratamiento, d.Cultivo, d.Variedad, d.Hibrido, d.AliasHibrido })
@@ -2243,10 +2243,10 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(500)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.LaboresTb).WithMany(p => p.NavegadorTbs)
+            /*entity.HasOne(d => d.LaboresTb).WithMany(p => p.NavegadorTbs)
                 .HasForeignKey(d => new { d.Labor, d.Departamento })
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefLabores_TB164");
+                .HasConstraintName("RefLabores_TB164");*/
         });
 
         modelBuilder.Entity<PilaTb>(entity =>
@@ -2736,11 +2736,11 @@ public partial class AppDbContext : DbContext
                 .HasDefaultValue("GENERAL")
                 .HasColumnName("Rol_De_Usuario");
 
-            entity.HasMany(e => e.DepUsuarios)
+            /*entity.HasMany(e => e.DepUsuarios)
                 .WithOne(e => e.UsuarioTb)
                 .HasForeignKey(e => e.Usuario)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefUsuario_TB104");
+                .HasConstraintName("RefUsuario_TB104");*/
             
             /*entity.HasMany(d => d.Departamentos).WithMany(p => p.Usuarios)
                 .UsingEntity<Dictionary<string, object>>(
@@ -2787,10 +2787,10 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(500)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.NombreLoteNavigation).WithMany(p => p.ValvulasTbs)
+            /*entity.HasOne(d => d.NombreLoteNavigation).WithMany(p => p.ValvulasTbs)
                 .HasForeignKey(d => d.NombreLote)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefLotes_Fisicos_TB12");
+                .HasConstraintName("RefLotes_Fisicos_TB12");*/
         });
 
         modelBuilder.Entity<VariedadTb>(entity =>
@@ -2831,9 +2831,9 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(500)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.TemporadaNavigation).WithMany(p => p.VersionPoTbs)
+            /*entity.HasOne(d => d.TemporadaNavigation).WithMany(p => p.VersionPoTbs)
                 .HasForeignKey(d => d.Temporada)
-                .HasConstraintName("RefTemporada_TB165");
+                .HasConstraintName("RefTemporada_TB165");*/
         });
 
         modelBuilder.Entity<VvAplicaTb>(entity =>
@@ -2923,10 +2923,10 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.HibridosTb).WithMany(p => p.VvLotesSemillaTbs)
+            /*entity.HasOne(d => d.HibridosTb).WithMany(p => p.VvLotesSemillaTbs)
                 .HasForeignKey(d => new { d.Cultivo, d.Variedad, d.Hibrido })
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefHibridos_TB241");
+                .HasConstraintName("RefHibridos_TB241");*/
         });
 
         modelBuilder.Entity<VvProductosAplicadosTb>(entity =>

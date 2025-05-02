@@ -13,6 +13,6 @@ public partial class CertificacionesTb
 
     public string? Comentarios { get; set; }
 
-    public virtual ProductosTb? IdProductoNavigation { get; set; }
+    //public virtual ProductosTb? IdProductoNavigation { get; set; }
 
 }

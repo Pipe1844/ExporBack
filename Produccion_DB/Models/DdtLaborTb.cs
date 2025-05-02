@@ -19,12 +19,12 @@ public partial class DdtLaborTb
 
     //public virtual LaborTTb LaborTTb { get; set; } = null!;
 
-    public virtual ICollection<PoProductosALaborTb> PoProductosALaborTbs { get; set; } = new List<PoProductosALaborTb>();
+    //public virtual ICollection<PoProductosALaborTb> PoProductosALaborTbs { get; set; } = new List<PoProductosALaborTb>();
 
     //public virtual TemporadaTb TemporadaNavigation { get; set; } = null!;
     
-    public virtual LaborTTb? LaborTTb { get; set; }
+    //public virtual LaborTTb? LaborTTb { get; set; }
 
-    public virtual TemporadaTb? TemporadaNavigation { get; set; }
+    //public virtual TemporadaTb? TemporadaNavigation { get; set; }
 
 }

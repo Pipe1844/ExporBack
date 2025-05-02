@@ -13,9 +13,9 @@ public partial class LaboresTb
 
     //public virtual DepartamentoTb DepartamentoNavigation { get; set; } = null!;
 
-    public virtual ICollection<KnLaboresLotesTb> KnLaboresLotesTbs { get; set; } = new List<KnLaboresLotesTb>();
+    /*public virtual ICollection<KnLaboresLotesTb> KnLaboresLotesTbs { get; set; } = new List<KnLaboresLotesTb>();*/
 
     /*public virtual ICollection<LaborTTb> LaborTTbs { get; set; } = new List<LaborTTb>();*/
 
-    public virtual ICollection<NavegadorTb> NavegadorTbs { get; set; } = new List<NavegadorTb>();
+    /*public virtual ICollection<NavegadorTb> NavegadorTbs { get; set; } = new List<NavegadorTb>();*/
 }

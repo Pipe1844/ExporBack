@@ -31,13 +31,13 @@ public partial class LotesPoTb
 
     public string? ProgFitoProteccion { get; set; }
 
-    public virtual ICollection<CamasLotesPoTb> CamasLotesPoTbs { get; set; } = new List<CamasLotesPoTb>();
+    //public virtual ICollection<CamasLotesPoTb> CamasLotesPoTbs { get; set; } = new List<CamasLotesPoTb>();
 
-    public virtual ICollection<FtAplicacionesTb> FtAplicacionesTbs { get; set; } = new List<FtAplicacionesTb>();
+    //public virtual ICollection<FtAplicacionesTb> FtAplicacionesTbs { get; set; } = new List<FtAplicacionesTb>();
 
-    public virtual LcTrasplanteLoteTb? LcTrasplanteLoteTb { get; set; }
+    //public virtual LcTrasplanteLoteTb? LcTrasplanteLoteTb { get; set; }
 
-    public virtual ICollection<LvTermporadaTb> LvTermporadaTbs { get; set; } = new List<LvTermporadaTb>();
+    //public virtual ICollection<LvTermporadaTb> LvTermporadaTbs { get; set; } = new List<LvTermporadaTb>();
     /*
 
     public virtual LotesFisicosTb NombreLoteNavigation { get; set; } = null!;

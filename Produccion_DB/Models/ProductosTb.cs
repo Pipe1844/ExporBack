@@ -25,13 +25,13 @@ public partial class ProductosTb
 
     public bool? Activo { get; set; }
 
-    public virtual ICollection<CertificacionesTb> CertificacionesTbs { get; set; } = new List<CertificacionesTb>();
+    //public virtual ICollection<CertificacionesTb> CertificacionesTbs { get; set; } = new List<CertificacionesTb>();
 
-    public virtual ICollection<FtPedidoProductosTb> FtPedidoProductosTbs { get; set; } = new List<FtPedidoProductosTb>();
+    //public virtual ICollection<FtPedidoProductosTb> FtPedidoProductosTbs { get; set; } = new List<FtPedidoProductosTb>();
 
-    public virtual ICollection<KnPoPedidoProductosTb> KnPoPedidoProductosTbs { get; set; } = new List<KnPoPedidoProductosTb>();
+    //public virtual ICollection<KnPoPedidoProductosTb> KnPoPedidoProductosTbs { get; set; } = new List<KnPoPedidoProductosTb>();
 
-    public virtual ICollection<KnProductosALaborTb> KnProductosALaborTbs { get; set; } = new List<KnProductosALaborTb>();
+    //public virtual ICollection<KnProductosALaborTb> KnProductosALaborTbs { get; set; } = new List<KnProductosALaborTb>();
 
-    public virtual ICollection<PoProductosALaborTb> PoProductosALaborTbs { get; set; } = new List<PoProductosALaborTb>();
+    //public virtual ICollection<PoProductosALaborTb> PoProductosALaborTbs { get; set; } = new List<PoProductosALaborTb>();
 }

@@ -19,7 +19,7 @@ public partial class LaborTTb
 
     public string? AplicarA { get; set; }
 
-    public virtual ICollection<DdtLaborTb> DdtLaborTbs { get; set; } = new List<DdtLaborTb>();
+    //public virtual ICollection<DdtLaborTb> DdtLaborTbs { get; set; } = new List<DdtLaborTb>();
 
   /*  public virtual DepartamentoTb DepartamentoNavigation { get; set; } = null!;*/
 

@@ -13,7 +13,7 @@ public partial class VariedadTb
 
     public string? Descripcion { get; set; }
 
-    public virtual ICollection<HibridosPoTb> HibridosPoTbs { get; set; } = new List<HibridosPoTb>();
+    //public virtual ICollection<HibridosPoTb> HibridosPoTbs { get; set; } = new List<HibridosPoTb>();
 
-    public virtual ICollection<HibridosTb> HibridosTbs { get; set; } = new List<HibridosTb>();
+    //public virtual ICollection<HibridosTb> HibridosTbs { get; set; } = new List<HibridosTb>();
 }
