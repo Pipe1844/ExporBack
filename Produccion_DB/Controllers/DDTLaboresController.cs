@@ -327,31 +327,49 @@ namespace Produccion_DB.Controllers;
             return Ok(new { isSuccess = true, status = 200, message = "Labor DDT eliminada exitosamente." });
         }
 
-        [HttpGet("{fechaActual}/{fechaInicio}/{fechaFinal}")]
-        public async Task<IActionResult> FilterDDTAndLote(string fechaActual, string fechaInicio, string fechaFinal)
+        [HttpGet("{fechaInicio}/{fechaFinal}")]
+        public async Task<IActionResult> FilterDDTAndLote(string fechaInicio, string fechaFinal)
         {
+            // Parse las fechas
+            if (!DateTime.TryParse(fechaInicio, out var startDate) || !DateTime.TryParse(fechaFinal, out var endDate))
+            {
+                return BadRequest(new { isSuccess = false, message = "Fechas inválidas" });
+            }
+
+            // Convertir DateTime a DateOnly si es necesario
+            var startDateOnly = startDate.Date;  // Solo la parte de la fecha
+            var endDateOnly = endDate.Date;
+
             var data = await appDbContext.DdtLaborTbs
                 .Join(
                     appDbContext.LotesPoTbs,
                     d => new { d.Temporada, Siembra = d.SiembraNumero },
                     l => new { l.Temporada, Siembra = l.SiembraNum },
-                    (d, l) => new
-                    {
-                        // Proyección anónima; aquí pones lo que necesites exponer
-                        Temporada        = d.Temporada,
-                        SiembraNumero    = d.SiembraNumero,
-                        Departamento     = d.Departamento,
-                        Labor            = d.Labor,
-                        AliasLabor       = d.AliasLabor,
-
-                        NombreLote       = l.NombreLote,
-                        FechaTrasplante  = l.FechaTrasplante,
-                        Area             = l.Area,
-                        // …etc.
-                    }
+                    (d, l) => new { d, l }
                 )
+                .Where(joined =>
+                    joined.d.Temporada == "2030-2031" &&
+                    joined.l.FechaTrasplante != null &&
+                    // Cálculo de la fecha trasladada, y usando la parte de solo fecha
+                    EF.Functions.DateAddDay(joined.d.Ddt, joined.l.FechaTrasplante.Value) >= startDateOnly &&
+                    EF.Functions.DateAddDay(joined.d.Ddt, joined.l.FechaTrasplante.Value) <= endDateOnly
+                )
+                .Select(joined => new
+                {
+                    Temporada        = joined.d.Temporada,
+                    SiembraNumero    = joined.d.SiembraNumero,
+                    Departamento     = joined.d.Departamento,
+                    Labor            = joined.d.Labor,
+                    AliasLabor       = joined.d.AliasLabor,
+
+                    NombreLote       = joined.l.NombreLote,
+                    FechaTrasplante  = joined.l.FechaTrasplante,
+                    Area             = joined.l.Area,
+                    FechaCalculada   = EF.Functions.DateAddDay(joined.d.Ddt, joined.l.FechaTrasplante.Value)
+                })
                 .ToListAsync();
-            
-            return Ok(new {isSucces = true, status = 200, message = "a"});
+
+            return Ok(new { isSuccess = true, status = 200, data });
         }
+
     }
