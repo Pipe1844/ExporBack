@@ -384,6 +384,6 @@ public class DDTLaboresController : ControllerBase
             .Where(x => x.FechaCalculada >= startDateOnly && x.FechaCalculada <= endDateOnly)
             .ToList();
 
-        return Ok(new { isSuccess = true, status = 200, data });
+        return Ok(data.Count == 0 ? new { isSuccess = true, status = 204, data} : new { isSuccess = true, status = 200, data });
     }
 }

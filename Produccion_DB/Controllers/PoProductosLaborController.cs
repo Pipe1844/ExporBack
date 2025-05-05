@@ -65,33 +65,101 @@ namespace Produccion_DB.Controllers;
         }
 
 
+        // [HttpGet("{temporada}/{siembraNum}/{departamento}/{labor}/{aliasLabor}/{ddt}")]
+        // public async Task<IActionResult> getByTempSiembraNumDepLabAliasDdt(string temporada, int siembraNum, string departamento, 
+        //     string labor,string aliasLabor, int ddt)
+        // {
+        //     try
+        //     {
+        //         var departament = "RIEGO Y DRENAJE";
+        //         var poProductosLabor = await appDbContext.PoProductosALaborTbs
+        //             .Where(l => l.Temporada == temporada && l.SiembraNumero==siembraNum &&
+        //                         l.Departamento == departamento && l.Labor == labor && l.AliasLabor==aliasLabor 
+        //                         && l.Ddt == ddt)
+        //             .Select(l => new
+        //             {
+        //                 l.Temporada,
+        //                 l.SiembraNumero,
+        //                 l.Departamento,
+        //                 l.Labor,
+        //                 l.AliasLabor,
+        //                 l.Ddt,
+        //                 l.IdProducto,
+        //                 l.NombreDescriptivo,
+        //                 l.DosisHa,
+        //                 l.HorasAgua,
+        //                 l.HorasInyeccion,
+        //                 l.HorasLavado
+        //             })
+        //             .ToListAsync();
+        //
+        //         return poProductosLabor.Count==0 ?
+        //             Ok(new { isSuccess = true, status = 204, poProductosLabor= new List<object> () }) :
+        //             Ok(new { isSuccess = true, status = 200, poProductosLabor });
+        //     }
+        //     catch (DbUpdateException dbEx)
+        //     { 
+        //         return StatusCode(500, new 
+        //         { 
+        //             isSuccess = false, 
+        //             status = 500, 
+        //             message = "Ocurrió un error al acceder a la base de datos.", 
+        //             error = dbEx.Message,
+        //             innerError = dbEx.InnerException?.Message
+        //         });
+        //     }
+        //     // Manejo de errores generales
+        //     catch (Exception ex)
+        //     {
+        //         return StatusCode(500, new 
+        //         { 
+        //             isSuccess = false, 
+        //             status = 500, 
+        //             message = "Ocurrió un error inesperado.", 
+        //             error = ex.Message 
+        //         });
+        //     }
+        // }
+        
         [HttpGet("{temporada}/{siembraNum}/{departamento}/{labor}/{aliasLabor}/{ddt}")]
         public async Task<IActionResult> getByTempSiembraNumDepLabAliasDdt(string temporada, int siembraNum, string departamento, 
             string labor,string aliasLabor, int ddt)
         {
             try
             {
-                var departament = "RIEGO Y DRENAJE";
                 var poProductosLabor = await appDbContext.PoProductosALaborTbs
-                    .Where(l => l.Temporada == temporada && l.SiembraNumero==siembraNum &&
-                                l.Departamento == departamento && l.Labor == labor && l.AliasLabor==aliasLabor 
-                                && l.Ddt == ddt)
-                    .Select(l => new
+                    .Where(l =>
+                        l.Temporada      == temporada &&
+                        l.SiembraNumero == siembraNum &&
+                        l.Departamento   == departamento &&
+                        l.Labor          == labor &&
+                        l.AliasLabor     == aliasLabor &&
+                        l.Ddt            == ddt
+                    )
+                    .Join(
+                        appDbContext.ProductosTbs,
+                        l => l.IdProducto,
+                        p => p.IdProducto,
+                        (l, p) => new { l, p }
+                    )
+                    .Select(x => new
                     {
-                        l.Temporada,
-                        l.SiembraNumero,
-                        l.Departamento,
-                        l.Labor,
-                        l.AliasLabor,
-                        l.Ddt,
-                        l.IdProducto,
-                        l.NombreDescriptivo,
-                        l.DosisHa,
-                        l.HorasAgua,
-                        l.HorasInyeccion,
-                        l.HorasLavado
+                        x.l.Temporada,
+                        x.l.SiembraNumero,
+                        x.l.Departamento,
+                        x.l.Labor,
+                        x.l.AliasLabor,
+                        x.l.Ddt,
+                        x.l.IdProducto,
+                        x.l.NombreDescriptivo,
+                        x.l.DosisHa,
+                        x.l.HorasAgua,
+                        x.l.HorasInyeccion,
+                        x.l.HorasLavado,
+                        x.p.UnidadMedida
                     })
                     .ToListAsync();
+
 
                 return poProductosLabor.Count==0 ?
                     Ok(new { isSuccess = true, status = 204, poProductosLabor= new List<object> () }) :
