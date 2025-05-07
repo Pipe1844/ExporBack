@@ -63,6 +63,49 @@ public class PoPedidoProductosController : Controller
             });
         }
     }
+    
+    [HttpGet("lastBoleta")]
+    public async Task<IActionResult> GetLastBoleta()
+    {
+        try
+        {
+            //var lastBoleta = await this.appDbContext.KnPoPedidoProductosTbs.ToListAsync();
+
+            var ultimaBoleta = await this.appDbContext.KnPoPedidoProductosTbs
+                .OrderByDescending(p => p.NumBoleta)
+                .Select(p => new { p.NumBoleta,})
+                .FirstOrDefaultAsync();
+
+            return Ok(new
+            {
+                isSuccess = true,
+                status = 200,
+                ultimaBoleta
+            });
+        }
+        catch (DbUpdateException dbEx)
+        {
+            return StatusCode(500, new
+            {
+                isSuccess = false,
+                status = 500,
+                message = "Ocurrió un error al acceder a la base de datos.",
+                error = dbEx.Message,
+                innerError = dbEx.InnerException?.Message
+            });
+        }
+        // Manejo de errores generales
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                isSuccess = false,
+                status = 500,
+                message = "Ocurrió un error inesperado.",
+                error = ex.Message
+            });
+        }
+    }
 
     [HttpGet("{idPedido}/{idProducto}/{NumBoleta}")]
     public async Task<IActionResult> Show(string idPedido, int idProducto, int numBoleta)
