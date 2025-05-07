@@ -81,12 +81,13 @@ namespace Produccion_DB.Controllers
         {
             try
             {
-                var usuario = await _appDbContext.UsuarioTbs.FindAsync(id);
+                var usuario = await _appDbContext.UsuarioTbs.Where(u => u.IdEmpleado == id).ToListAsync();
 
-                if (usuario == null)
+                if (usuario.Count == 0)
                 {
                     return NotFound(new { isSuccess = false, status = 404, message = "Usuario no encontrado." });
                 }
+
 
                 return Ok(new { isSuccess = true, status = 200, usuario });
             }
