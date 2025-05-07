@@ -45,7 +45,7 @@ public partial class KnPoPedidoProductosTb
 
     public string? Rcabezalero { get; set; }
 
-    public virtual ICollection<ApruebaProductoTb> ApruebaProductoTbs { get; set; } = new List<ApruebaProductoTb>();
+    /*public virtual ICollection<ApruebaProductoTb> ApruebaProductoTbs { get; set; } = new List<ApruebaProductoTb>();
 
     public virtual ICollection<EntregaProductoTb> EntregaProductoTbs { get; set; } = new List<EntregaProductoTb>();
 
@@ -55,5 +55,5 @@ public partial class KnPoPedidoProductosTb
 
     public virtual ICollection<RcabezaleroProductoTb> RcabezaleroProductoTbs { get; set; } = new List<RcabezaleroProductoTb>();
 
-    public virtual ICollection<RdistribuidorProductoTb> RdistribuidorProductoTbs { get; set; } = new List<RdistribuidorProductoTb>();
+    public virtual ICollection<RdistribuidorProductoTb> RdistribuidorProductoTbs { get; set; } = new List<RdistribuidorProductoTb>();*/
 }

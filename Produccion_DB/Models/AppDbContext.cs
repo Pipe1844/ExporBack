@@ -212,9 +212,9 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("Usuario_Windows");
 
-            entity.HasOne(d => d.KnPoPedidoProductosTb).WithMany(p => p.ApruebaProductoTbs)
+            /*entity.HasOne(d => d.KnPoPedidoProductosTb).WithMany(p => p.ApruebaProductoTbs)
                 .HasForeignKey(d => new { d.IdPedido, d.IdProducto, d.NumBoleta })
-                .HasConstraintName("RefKN_PO_Pedido_Productos_TB169");
+                .HasConstraintName("RefKN_PO_Pedido_Productos_TB169");*/
         });
 
         modelBuilder.Entity<ArticulosTb>(entity =>
@@ -599,9 +599,9 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("Usuario_Windows");
 
-            entity.HasOne(d => d.KnPoPedidoProductosTb).WithMany(p => p.EntregaProductoTbs)
+            /*entity.HasOne(d => d.KnPoPedidoProductosTb).WithMany(p => p.EntregaProductoTbs)
                 .HasForeignKey(d => new { d.IdPedido, d.IdProducto, d.NumBoleta })
-                .HasConstraintName("RefKN_PO_Pedido_Productos_TB170");
+                .HasConstraintName("RefKN_PO_Pedido_Productos_TB170");*/
         });
 
         modelBuilder.Entity<EstRangosPesosTb>(entity =>
@@ -1585,10 +1585,10 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(d => new { d.IdRiego, d.IdCabezal })
                 .HasConstraintName("RefRG_Riego_TB160");
 
-            entity.HasOne(d => d.KnPoPedidoProductosTb).WithMany(p => p.KnPoInyeccionProductosTbs)
+            /*entity.HasOne(d => d.KnPoPedidoProductosTb).WithMany(p => p.KnPoInyeccionProductosTbs)
                 .HasForeignKey(d => new { d.IdPedido, d.IdProducto, d.NumBoleta })
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("RefKN_PO_Pedido_Productos_TB162");
+                .HasConstraintName("RefKN_PO_Pedido_Productos_TB162");*/
         });
 
         modelBuilder.Entity<KnPoPedidoProductosTb>(entity =>
@@ -2471,9 +2471,9 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("Usuario_Windows");
 
-            entity.HasOne(d => d.KnPoPedidoProductosTb).WithMany(p => p.RcabezaleroProductoTbs)
+            /*entity.HasOne(d => d.KnPoPedidoProductosTb).WithMany(p => p.RcabezaleroProductoTbs)
                 .HasForeignKey(d => new { d.IdPedido, d.IdProducto, d.NumBoleta })
-                .HasConstraintName("RefKN_PO_Pedido_Productos_TB174");
+                .HasConstraintName("RefKN_PO_Pedido_Productos_TB174");*/
         });
 
         modelBuilder.Entity<RdistribuidorProductoTb>(entity =>
@@ -2507,9 +2507,9 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("Usuario_Windows");
 
-            entity.HasOne(d => d.KnPoPedidoProductosTb).WithMany(p => p.RdistribuidorProductoTbs)
+            /*entity.HasOne(d => d.KnPoPedidoProductosTb).WithMany(p => p.RdistribuidorProductoTbs)
                 .HasForeignKey(d => new { d.IdPedido, d.IdProducto, d.NumBoleta })
-                .HasConstraintName("RefKN_PO_Pedido_Productos_TB172");
+                .HasConstraintName("RefKN_PO_Pedido_Productos_TB172");*/
         });
 
         modelBuilder.Entity<RgCabezalTb>(entity =>
