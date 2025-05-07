@@ -113,30 +113,30 @@ public class PoPedidoProductosController : Controller
         }
     }
     
-    [HttpGet("{Temporada}/{Siembra_Num}/{Departamento}/{Cultivo}/{aliasLabor}/{aliasLote}/{fechaBase}/{Ddt}/{areaSiembra}")]
+    [HttpGet("{Temporada}/{SiembraNum}/{Departamento}/{Cultivo}/{aliasLabor}/{aliasLote}/{fechaBase}/{Ddt}/{areaSiembra}")]
     public async Task<IActionResult> Show(
-        string temporada,
-        int siembraNum,
-        string departamento,
-        string cultivo,
+        string Temporada,
+        int SiembraNum,
+        string Departamento,
+        string Cultivo,
         string aliasLabor,
         string aliasLote,
         DateOnly fechaBase,
-        int ddt,
+        int Ddt,
         float areaSiembra)
     {
         try
         {
             var PoPedidoProductos = await this.appDbContext.KnPoPedidoProductosTbs
                 .Where(r =>
-                    r.Temporada == temporada &&
-                    r.SiembraNum == siembraNum &&
-                    r.Departamento == departamento &&
-                    r.Cultivo == cultivo &&
+                    r.Temporada == Temporada &&
+                    r.SiembraNum == SiembraNum &&
+                    r.Departamento == Departamento &&
+                    r.Cultivo == Cultivo &&
                     r.AliasLabor == aliasLabor &&
                     r.AliasLote == aliasLote &&
                     r.FechaBase == fechaBase &&
-                    r.Ddt == ddt &&
+                    r.Ddt == Ddt &&
                     r.AreaSiembra == areaSiembra)
                 .ToListAsync();
 
