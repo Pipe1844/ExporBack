@@ -170,17 +170,48 @@ public class PoPedidoProductosController : Controller
     {
         try
         {
-            var PoPedidoProductos = await this.appDbContext.KnPoPedidoProductosTbs
-                .Where(r =>
-                    r.Temporada == Temporada &&
-                    r.SiembraNum == SiembraNum &&
-                    r.Departamento == Departamento &&
-                    r.Cultivo == Cultivo &&
-                    r.AliasLabor == aliasLabor &&
-                    r.AliasLote == aliasLote &&
-                    r.FechaBase == fechaBase &&
-                    r.Ddt == Ddt &&
-                    r.AreaSiembra == areaSiembra)
+            var PoPedidoProductos = await appDbContext.KnPoPedidoProductosTbs
+                .Join(
+                    appDbContext.ProductosTbs,
+                    pedido => pedido.IdProducto,
+                    producto => producto.IdProducto,
+                    (pedido, producto) => new
+                    {
+                        // Unimos todo en un solo bloque tipo JSON
+                        IdPedido = pedido.IdPedido,
+                        IdProducto = pedido.IdProducto,
+                        NumBoleta = pedido.NumBoleta,
+                        Temporada = pedido.Temporada,
+                        SiembraNum = pedido.SiembraNum,
+                        Departamento = pedido.Departamento,
+                        Cultivo = pedido.Cultivo,
+                        AliasLabor = pedido.AliasLabor,
+                        AliasLote = pedido.AliasLote,
+                        FechaBase = pedido.FechaBase,
+                        Ddt = pedido.Ddt,
+                        AreaSiembra = pedido.AreaSiembra,
+                        UnidadesPorLote = pedido.UnidadesPorLote,
+                        NombreDescriptivo = pedido.NombreDescriptivo,
+                        FechaPedido = pedido.FechaPedido,
+                        Requisado = pedido.Requisado,
+                        Aprueba = pedido.Aprueba,
+                        Recive = pedido.Recive,
+                        Rdistribuye = pedido.Rdistribuye,
+                        Rcabezalero = pedido.Rcabezalero,
+                        UnidadMedida = producto.UnidadMedida // ← Este es el extra
+                    }
+                )
+                .Where(joined =>
+                    joined.Temporada == Temporada &&
+                    joined.SiembraNum == SiembraNum &&
+                    joined.Departamento == Departamento &&
+                    joined.Cultivo == Cultivo &&
+                    joined.AliasLabor == aliasLabor &&
+                    joined.AliasLote == aliasLote &&
+                    joined.FechaBase == fechaBase &&
+                    joined.Ddt == Ddt &&
+                    joined.AreaSiembra == areaSiembra
+                )
                 .ToListAsync();
 
             if (PoPedidoProductos == null)
