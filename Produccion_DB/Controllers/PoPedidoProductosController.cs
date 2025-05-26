@@ -63,7 +63,7 @@ public class PoPedidoProductosController : Controller
             });
         }
     }
-    
+
     [HttpGet("lastBoleta")]
     public async Task<IActionResult> GetLastBoleta()
     {
@@ -73,7 +73,7 @@ public class PoPedidoProductosController : Controller
 
             var ultimaBoleta = await this.appDbContext.KnPoPedidoProductosTbs
                 .OrderByDescending(p => p.NumBoleta)
-                .Select(p => new { p.NumBoleta,})
+                .Select(p => new { p.NumBoleta, })
                 .FirstOrDefaultAsync();
 
             return Ok(new
@@ -155,8 +155,9 @@ public class PoPedidoProductosController : Controller
             });
         }
     }
-    
-    [HttpGet("{Temporada}/{SiembraNum}/{Departamento}/{Cultivo}/{aliasLabor}/{aliasLote}/{fechaBase}/{Ddt}/{areaSiembra}")]
+
+    [HttpGet(
+        "{Temporada}/{SiembraNum}/{Departamento}/{Cultivo}/{aliasLabor}/{aliasLote}/{fechaBase}/{Ddt}/{areaSiembra}")]
     public async Task<IActionResult> Show(
         string Temporada,
         int SiembraNum,
@@ -254,7 +255,7 @@ public class PoPedidoProductosController : Controller
             });
         }
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> Store([FromBody] KnPoPedidoProductosTb poPedidoProductos)
     {
@@ -269,6 +270,55 @@ public class PoPedidoProductosController : Controller
                 status = 201,
                 message = "poPedidoProductos creado con éxito.",
                 poPedidoProductos = poPedidoProductos
+            });
+        }
+        catch (DbUpdateException dbEx)
+        {
+            return StatusCode(500, new
+            {
+                isSuccess = false,
+                status = 500,
+                message = "Ocurrió un error al acceder a la base de datos.",
+                error = dbEx.Message,
+                innerError = dbEx.InnerException?.Message
+            });
+        }
+        // Manejo de errores generales
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                isSuccess = false,
+                status = 500,
+                message = "Ocurrió un error inesperado.",
+                error = ex.Message
+            });
+        }
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] KnPoPedidoProductosTb newPoPedido)
+    {
+        try
+        {
+            var poPedido = await this.appDbContext.KnPoPedidoProductosTbs
+                .FirstOrDefaultAsync(lPo =>
+                    lPo.IdPedido == newPoPedido.IdPedido && lPo.IdProducto == newPoPedido.IdProducto &&
+                    lPo.NumBoleta == newPoPedido.NumBoleta);
+
+            if (poPedido == null)
+            {
+                return NotFound(new
+                    { isSuccess = false, status = 404, message = "poPedido no encontrado." });
+            }
+
+            poPedido.Aprueba = newPoPedido.Aprueba;
+
+            await this.appDbContext.SaveChangesAsync();
+            return Ok(new
+            {
+                isSuccess = true, status = 200, message = "poPedido actualizado exitosamente.",
+                poPedido
             });
         }
         catch (DbUpdateException dbEx)
