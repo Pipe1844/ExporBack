@@ -167,7 +167,7 @@ public class PoPedidoProductosController : Controller
         string aliasLote,
         DateOnly fechaBase,
         int Ddt,
-        float areaSiembra)
+        double areaSiembra)
     {
         try
         {
