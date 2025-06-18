@@ -348,11 +348,11 @@ public class DDTLaboresController : ControllerBase
         {
             return BadRequest(new { isSuccess = false, message = "Fechas inválidas" });
         }
-
+        
         // Convertir DateTime a DateOnly si es necesario
         var startDateOnly = DateOnly.FromDateTime(startDate.Date); // Solo la parte de la fecha
         var endDateOnly = DateOnly.FromDateTime(endDate.Date);
-
+        
         var dataRaw = await appDbContext.DdtLaborTbs
             .Join(
                 appDbContext.LotesPoTbs,
@@ -384,6 +384,6 @@ public class DDTLaboresController : ControllerBase
             .Where(x => x.FechaCalculada >= startDateOnly && x.FechaCalculada <= endDateOnly)
             .ToList();
 
-        return Ok(data.Count == 0 ? new { isSuccess = true, status = 204, data} : new { isSuccess = true, status = 200, data });
+        return Ok(data.Count == 0 ? new { isSuccess = true, status = 200, data} : new { isSuccess = true, status = 200, data });
     }
 }
